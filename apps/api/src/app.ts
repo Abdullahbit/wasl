@@ -9,6 +9,7 @@ import { logger } from './config/logger.js'
 import { env } from './config/env.js'
 import { NotFoundError } from './shared/errors/AppError.js'
 import { authRouter } from './modules/auth/auth.router.js'
+import { profileRouter } from './modules/profiles/profile.router.js'
 
 export function createApp(): { app: Express; v1Router: Router } {
   const app = express()
@@ -52,6 +53,9 @@ export function createApp(): { app: Express; v1Router: Router } {
   // API v1 router placeholder — modules mount here in later tasks
   const v1Router = express.Router()
   app.use('/api/v1', v1Router)
+
+  // Profile routes
+  v1Router.use('/profile', profileRouter)
 
   // 404 handler
   app.use((_req, _res, next) => {
