@@ -14,6 +14,7 @@ import { communityRouter } from './modules/communities/community.router.js'
 import { resourceRouter } from './modules/resources/resource.router.js'
 import { opportunityRouter } from './modules/opportunities/opportunity.router.js'
 import { recommendationRouter } from './modules/recommendations/recommendation.router.js'
+import { aiRouter } from './modules/ai/ai.router.js'
 
 export function createApp(): { app: Express; v1Router: Router } {
   const app = express()
@@ -72,6 +73,9 @@ export function createApp(): { app: Express; v1Router: Router } {
 
   // Recommendation routes (auth required)
   v1Router.use('/recommendations', recommendationRouter)
+
+  // AI navigator routes (auth required, rate limited)
+  v1Router.use('/ai', aiRouter)
 
   // 404 handler
   app.use((_req, _res, next) => {

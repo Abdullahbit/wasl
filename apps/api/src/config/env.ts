@@ -11,7 +11,8 @@ const EnvSchema = z.object({
   RESEND_API_KEY: z.string().min(1),
   RESEND_FROM_EMAIL: z.string().email().default('noreply@platform.example.com'),
   AI_PROVIDER: z.enum(['anthropic', 'openai']).default('anthropic'),
-  AI_PROVIDER_API_KEY: z.string().min(1),
+  // Optional: AI navigator falls back to deterministic recommendations when unset.
+  AI_PROVIDER_API_KEY: z.string().min(1).optional(),
   AI_MODEL: z.string().default('claude-3-5-haiku-20241022'),
   CORS_ORIGIN: z.string().optional(),
 })
