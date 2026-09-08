@@ -8,6 +8,7 @@ import { generalLimiter } from './middleware/rate-limit.js'
 import { logger } from './config/logger.js'
 import { env } from './config/env.js'
 import { NotFoundError } from './shared/errors/AppError.js'
+import { authRouter } from './modules/auth/auth.router.js'
 
 export function createApp(): { app: Express; v1Router: Router } {
   const app = express()
@@ -44,6 +45,9 @@ export function createApp(): { app: Express; v1Router: Router } {
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' })
   })
+
+  // Auth routes (Better Auth handles all auth HTTP)
+  app.use('/api/auth', authRouter)
 
   // API v1 router placeholder — modules mount here in later tasks
   const v1Router = express.Router()
