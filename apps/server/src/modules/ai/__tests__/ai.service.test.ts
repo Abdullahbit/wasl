@@ -18,7 +18,7 @@ vi.mock('../../../config/env.js', () => ({
   },
 }));
 
-import { generateRecommendations } from '../ai.service.js';
+import { generateRecommendations, AI_REQUEST_TIMEOUT_MILLISECONDS } from '../ai.service.js';
 import type { Profile, Community } from '@prisma/client';
 
 function makeProfile(): Profile {
@@ -135,22 +135,33 @@ describe('generateRecommendations AI boundary', () => {
     expect(result.navigator).toBeUndefined();
   });
 
-  it('falls back on generic provider error', async () => {
-    const provider = {
-      createNavigator: vi.fn().mockRejectedValue(new Error('network error')),
-    };
-    const result = await generateRecommendations(makeProfile(), [makeCommunity(approvedId)], provider);
-    expect(result.navigator).toBeUndefined();
-    expect(result.warning).toBeDefined();
-  });
+  it('times out via Promise.race + AbortSignal and falls back without throwing', async () => {
+    vi.useFakeTimers();
+    try {
+      let capturedSignal: AbortSignal | null = null;
+      const provider = {
+        createNavigator: vi.fn().mockImplementation((_p: unknown, _c: unknown, signal: AbortSignal) => {
+          capturedSignal = signal;
+          return new Promise(() => {});
+        }),
+      };
 
-  it('handles timeout with fallback', async () => {
-    const timeoutProvider = {
-      createNavigator: vi.fn().mockRejectedValue(new Error('AI provider request timed out')),
-    };
-    const result = await generateRecommendations(makeProfile(), [makeCommunity(approvedId)], timeoutProvider);
-    expect(result.navigator).toBeUndefined();
-    expect(result.warning).toBeDefined();
+      const promise = generateRecommendations(makeProfile(), [makeCommunity(approvedId)], provider);
+
+      // Advance past the 15s production timeout without waiting real time
+      await vi.advanceTimersByTimeAsync(AI_REQUEST_TIMEOUT_MILLISECONDS);
+
+      const result = await promise;
+
+      expect(capturedSignal).not.toBeNull();
+      expect(capturedSignal!.aborted).toBe(true);
+      expect(result.navigator).toBeUndefined();
+      expect(result.warning).toBeDefined();
+      expect(result.deterministic[0]!.communityId).toBe(approvedId);
+      expect(result.deterministic.length).toBeGreaterThan(0);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('handles missing API key via fallback', async () => {

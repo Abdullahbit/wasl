@@ -11,7 +11,7 @@ import { NAVIGATOR_PROMPT_V1 } from './navigator.prompt.js';
 import { createOpenAiNavigator } from './openai.provider.js';
 
 const MAXIMUM_AI_CANDIDATES = 10;
-const AI_REQUEST_TIMEOUT_MILLISECONDS = 15_000;
+export const AI_REQUEST_TIMEOUT_MILLISECONDS = 15_000;
 
 export interface AiNavigatorProvider {
   createNavigator(
