@@ -7,6 +7,7 @@ import { ArrowUpRight } from 'lucide-react';
 
 const navigationItems = [
   { to: '/onboarding', label: 'Onboarding' },
+  { to: '/profile', label: 'Profile' },
   { to: '/plan', label: 'Starter Plan' },
   { to: '/communities', label: 'Communities' },
   { to: '/resources', label: 'Resources' },

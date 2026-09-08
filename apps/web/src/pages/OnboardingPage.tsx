@@ -9,10 +9,10 @@ import { useForm } from 'react-hook-form';
 import type { InputHTMLAttributes } from 'react';
 import type { z } from 'zod';
 import { profileQueryKey, saveProfile } from '../features/profiles/profileApi';
+import { arrivalStages, turkishLevels, commonInterests, commonGoals } from '../features/profiles/profileConstants';
 import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 
-const arrivalStages = ProfileInputSchema.shape.arrivalStage.options;
-const turkishLevels = ProfileInputSchema.shape.turkishLevel.options;
 type ProfileFormInput = z.input<typeof ProfileInputSchema>;
 
 export function OnboardingPage() {
@@ -30,11 +30,42 @@ export function OnboardingPage() {
     },
   });
   const profileMutation = useMutation({
-    mutationFn: saveProfile,
+    mutationFn: (profileInput: ProfileInput) => saveProfile(profileInput),
     onSuccess: (profileResponse) => {
       queryClient.setQueryData(profileQueryKey, profileResponse);
     },
   });
+
+  const currentInterests = form.watch('interests') || [];
+  const currentGoals = form.watch('goals') || [];
+
+  const toggleInterest = (interest: string) => {
+    if (currentInterests.includes(interest)) {
+      form.setValue(
+        'interests',
+        currentInterests.filter((i) => i !== interest),
+        { shouldValidate: true },
+      );
+    } else {
+      if (currentInterests.length < 20) {
+        form.setValue('interests', [...currentInterests, interest], { shouldValidate: true });
+      }
+    }
+  };
+
+  const toggleGoal = (goal: string) => {
+    if (currentGoals.includes(goal)) {
+      form.setValue(
+        'goals',
+        currentGoals.filter((g) => g !== goal),
+        { shouldValidate: true },
+      );
+    } else {
+      if (currentGoals.length < 20) {
+        form.setValue('goals', [...currentGoals, goal], { shouldValidate: true });
+      }
+    }
+  };
 
   return (
     <section className="max-w-2xl">
@@ -60,6 +91,48 @@ export function OnboardingPage() {
             {turkishLevels.map((level) => <option key={level}>{level}</option>)}
           </select>
         </label>
+        <div className="grid gap-2">
+          <span className="font-medium">Interests</span>
+          <div className="flex flex-wrap gap-2">
+            {commonInterests.map((interest) => {
+              const isSelected = currentInterests.includes(interest);
+              return (
+                <button
+                  key={interest}
+                  type="button"
+                  onClick={() => toggleInterest(interest)}
+                  aria-pressed={isSelected}
+                  className="focus:outline-none"
+                >
+                  <Badge variant={isSelected ? 'pillActive' : 'pill'} className="cursor-pointer text-sm">
+                    {interest} {isSelected ? '✓' : '+'}
+                  </Badge>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="grid gap-2">
+          <span className="font-medium">Goals</span>
+          <div className="flex flex-wrap gap-2">
+            {commonGoals.map((goal) => {
+              const isSelected = currentGoals.includes(goal);
+              return (
+                <button
+                  key={goal}
+                  type="button"
+                  onClick={() => toggleGoal(goal)}
+                  aria-pressed={isSelected}
+                  className="focus:outline-none"
+                >
+                  <Badge variant={isSelected ? 'pillActive' : 'pill'} className="cursor-pointer text-sm">
+                    {goal} {isSelected ? '✓' : '+'}
+                  </Badge>
+                </button>
+              );
+            })}
+          </div>
+        </div>
         {profileMutation.isError ? <p role="alert" className="text-red-700">{profileMutation.error.message}</p> : null}
         {profileMutation.isSuccess ? <p role="status" className="text-green-700">Your profile is ready.</p> : null}
         <Button
