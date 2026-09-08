@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import request from 'supertest'
+import express from 'express'
 import { createApp } from '../../../app.js'
+import { UnauthorizedError } from '../../../shared/errors/AppError.js'
 
 // Mock the auth middleware for tests
 vi.mock('../../../middleware/auth.js', () => ({
@@ -65,8 +67,6 @@ describe('Profile API', () => {
 
   it('GET /api/v1/profile without auth returns 401', async () => {
     // Build a mini app that uses an auth middleware which always rejects (simulating no session)
-    const express = (await import('express')).default
-    const { UnauthorizedError } = await import('../../../shared/errors/AppError.js')
     const testApp = express()
     testApp.use(express.json())
     // Rejecting auth middleware — no session present
