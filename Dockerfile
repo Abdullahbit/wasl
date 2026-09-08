@@ -30,13 +30,11 @@ RUN pnpm --filter @platform/web build
 FROM node:20-alpine AS api
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
-COPY --from=deps /app/node_modules node_modules
-COPY --from=deps /app/apps/api/node_modules apps/api/node_modules
-COPY --from=deps /app/packages/contracts/node_modules packages/contracts/node_modules
-COPY --from=build-contracts /app/packages/contracts packages/contracts
+COPY --from=build-api /app/node_modules node_modules
+COPY --from=build-api /app/packages/contracts packages/contracts
 COPY --from=build-api /app/apps/api/dist apps/api/dist
 COPY --from=build-api /app/apps/api/prisma apps/api/prisma
-COPY --from=build-api /app/apps/api/node_modules/.prisma apps/api/node_modules/.prisma
+COPY --from=build-api /app/apps/api/node_modules apps/api/node_modules
 COPY apps/api/package.json apps/api/
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/contracts/package.json packages/contracts/
