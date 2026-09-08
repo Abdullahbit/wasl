@@ -44,7 +44,7 @@ describe('scoreCommunity', () => {
 
   it('adds an arrival-stage score for newcomer communities', () => {
     const friendlyCommunity = makeCommunity({
-      universities: ['Any'],
+      universities: ['Beykoz University'],
       interests: [],
       languages: ['Arabic'],
       targetAudience: 'Newcomers',
@@ -70,11 +70,23 @@ describe('scoreCommunity', () => {
     expect(score).toBe(0);
   });
 
-  it('awards university points for city-wide Any', () => {
+  it('awards 0 for city-wide Any (eligible but no university points)', () => {
     const c = makeCommunity({ universities: ['Any'], interests: [], languages: ['Arabic'], targetAudience: null, newcomerFriendly: false });
     const p = makeProfile({ interests: [], goals: [] });
-    const { score } = scoreCommunity(p, c);
-    expect(score).toBe(30);
+    const { score, breakdown, reasonCodes } = scoreCommunity(p, c);
+    expect(score).toBe(0);
+    expect(breakdown['University match']).toBeUndefined();
+    expect(reasonCodes).not.toContain('UNIVERSITY_MATCH');
+  });
+
+  it('Any community remains eligible via other matches but without university bonus', () => {
+    const c = makeCommunity({ universities: ['Any'], interests: ['Software'], languages: ['English'], targetAudience: null, newcomerFriendly: false });
+    const p = makeProfile({ university: 'Beykoz University', interests: ['Software'], goals: [] });
+    const { score, reasonCodes } = scoreCommunity(p, c);
+    expect(score).toBe(35);
+    expect(reasonCodes).not.toContain('UNIVERSITY_MATCH');
+    expect(reasonCodes).toContain('INTEREST_MATCH');
+    expect(reasonCodes).toContain('LANGUAGE_MATCH');
   });
 
   it('awards +25 for interest match and 0 without', () => {
@@ -127,7 +139,7 @@ describe('scoreCommunity', () => {
 
   it('never exceeds 100', () => {
     const maxCommunity = makeCommunity({
-      universities: ['Any'],
+      universities: ['Beykoz University'],
       interests: ['Software'],
       languages: ['English'],
       targetAudience: 'Networking Newcomers First Week',

@@ -37,7 +37,7 @@ export function scoreCommunity(
   const breakdown: Record<string, number> = {};
   const reasonCodes: ReasonCode[] = [];
 
-  if (community.universities.includes(profile.university) || community.universities.includes('Any')) {
+  if (community.universities.includes(profile.university)) {
     score += RECOMMENDATION_WEIGHTS.UNIVERSITY_MATCH;
     breakdown['University match'] = RECOMMENDATION_WEIGHTS.UNIVERSITY_MATCH;
     reasonCodes.push(REASON_CODES.UNIVERSITY_MATCH);

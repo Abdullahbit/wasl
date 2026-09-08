@@ -13,10 +13,19 @@ import { createOpenAiNavigator } from './openai.provider.js';
 const MAXIMUM_AI_CANDIDATES = 10;
 export const AI_REQUEST_TIMEOUT_MILLISECONDS = 15_000;
 
+export type AiCandidate = {
+  id: string;
+  name: string;
+  category: string;
+  languages: string[];
+  score: number;
+  reasonCodes: string[];
+};
+
 export interface AiNavigatorProvider {
   createNavigator(
     profile: Profile,
-    candidates: Community[],
+    candidates: AiCandidate[],
     cancellationSignal: AbortSignal,
   ): Promise<unknown>;
 }
@@ -54,15 +63,20 @@ export async function generateRecommendations(
     score: candidate.scoreResult,
   }));
 
+  const aiCandidates: AiCandidate[] = candidates.map((candidate) => ({
+    id: candidate.community.id,
+    name: candidate.community.name,
+    category: candidate.community.category,
+    languages: candidate.community.languages,
+    score: candidate.scoreResult.score,
+    reasonCodes: candidate.scoreResult.reasonCodes ?? [],
+  }));
+
   let aiNavigator: NavigatorResponse | undefined;
   let warning: string | undefined;
 
   try {
-    const providerResponse = await createNavigatorWithTimeout(
-      aiProvider,
-      profile,
-      candidates.map((candidate) => candidate.community),
-    );
+    const providerResponse = await createNavigatorWithTimeout(aiProvider, profile, aiCandidates);
     aiNavigator = NavigatorResponseSchema.parse(providerResponse);
   } catch (error) {
     logger.warn({ error }, 'AI navigator failed; returning deterministic recommendations');
@@ -112,7 +126,7 @@ export async function generateRecommendations(
 async function createNavigatorWithTimeout(
   aiProvider: AiNavigatorProvider,
   profile: Profile,
-  candidates: Community[],
+  candidates: AiCandidate[],
 ) {
   const abortController = new AbortController();
   let timeoutIdentifier: ReturnType<typeof setTimeout> | undefined;

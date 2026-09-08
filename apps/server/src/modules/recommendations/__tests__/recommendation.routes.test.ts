@@ -119,3 +119,47 @@ describe('GET /api/v1/recommendations', () => {
     expect(res.status).toBe(409);
   });
 });
+
+describe('POST /api/v1/recommendations', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('valid empty body returns 200 with deterministic recommendations and reasonCodes', async () => {
+    (prisma.profile.findUnique as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockProfile);
+    (prisma.community.findMany as unknown as ReturnType<typeof vi.fn>).mockResolvedValue([
+      makeCommunity('11111111-1111-4111-8111-111111111111'),
+      makeCommunity('22222222-2222-4222-8222-222222222222', { universities: ['Other'] }),
+    ]);
+
+    const res = await request(app).post('/api/v1/recommendations').send({});
+    expect(res.status).toBe(200);
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data[0].score.reasonCodes).toEqual(expect.arrayContaining(['UNIVERSITY_MATCH']));
+    expect(res.body.data[0].communityId).toBeDefined();
+  });
+
+  it('invalid body with extra field returns 400', async () => {
+    const res = await request(app).post('/api/v1/recommendations').send({ unexpected: 'field' });
+    expect(res.status).toBe(400);
+  });
+
+  it('respects top N and deterministic ordering via POST', async () => {
+    (prisma.profile.findUnique as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockProfile);
+    const communities = Array.from({ length: 7 }, (_, i) =>
+      makeCommunity(`33333333-3333-4333-8333-33333333333${i}`),
+    );
+    (prisma.community.findMany as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(communities);
+
+    const res = await request(app).post('/api/v1/recommendations').send({});
+    expect(res.status).toBe(200);
+    expect(res.body.data.length).toBe(5);
+    const ids = res.body.data.map((d: { communityId: string }) => d.communityId);
+    const sorted = [...ids].sort();
+    expect(ids).toEqual(sorted);
+  });
+
+  it('returns 409 when profile missing via POST', async () => {
+    (prisma.profile.findUnique as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    const res = await request(app).post('/api/v1/recommendations').send({});
+    expect(res.status).toBe(409);
+  });
+});

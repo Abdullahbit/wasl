@@ -193,4 +193,28 @@ describe('generateRecommendations AI boundary', () => {
     expect(result.navigator).toBeUndefined();
     expect(result.deterministic[0]!.community.id).toBe(approvedId);
   });
+
+  it('passes deterministic score and reasonCodes to provider without exposing internal fields', async () => {
+    let capturedCandidates: unknown = null;
+    const provider = {
+      createNavigator: vi.fn().mockImplementation((_profile: unknown, candidates: unknown) => {
+        capturedCandidates = candidates;
+        return Promise.resolve({ summary: 'ok', nextSteps: [] });
+      }),
+    };
+    await generateRecommendations(makeProfile(), [makeCommunity(approvedId)], provider);
+    const cands = capturedCandidates as Array<Record<string, unknown>>;
+    expect(cands).toBeDefined();
+    expect(cands[0]!.id).toBe(approvedId);
+    expect(cands[0]!.name).toBe('Test Community');
+    expect(cands[0]!.category).toBe('technology');
+    expect(cands[0]!.languages).toEqual(['English']);
+    expect(typeof cands[0]!.score).toBe('number');
+    expect((cands[0]!.reasonCodes as string[])).toEqual(expect.arrayContaining(['UNIVERSITY_MATCH']));
+    // Must not expose internal DB fields
+    expect(cands[0]!).not.toHaveProperty('createdAt');
+    expect(cands[0]!).not.toHaveProperty('updatedAt');
+    expect(cands[0]!).not.toHaveProperty('verified');
+    expect(cands[0]!).not.toHaveProperty('description'); // description not in minimal payload
+  });
 });

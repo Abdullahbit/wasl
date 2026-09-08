@@ -5,13 +5,14 @@
  * Treats all provider output as untrusted and validates via Zod in ai.service.
  */
 
-import { Profile, Community } from '@prisma/client';
+import { Profile } from '@prisma/client';
 import { environment } from '../../config/env.js';
 import { NAVIGATOR_PROMPT_V1 } from './navigator.prompt.js';
+import type { AiCandidate } from './ai.service.js';
 
 export async function createOpenAiNavigator(
   profile: Profile,
-  candidates: Community[],
+  candidates: AiCandidate[],
   signal: AbortSignal,
 ): Promise<unknown> {
   const apiKey = environment.AI_PROVIDER_API_KEY;
@@ -30,12 +31,13 @@ export async function createOpenAiNavigator(
       interests: profile.interests,
       goals: profile.goals,
     },
-    candidates: candidates.map((c) => ({
-      id: c.id,
-      name: c.name,
-      description: c.description,
-      category: c.category,
-      languages: c.languages,
+    candidates: candidates.map((candidate) => ({
+      id: candidate.id,
+      name: candidate.name,
+      category: candidate.category,
+      languages: candidate.languages,
+      score: candidate.score,
+      reasonCodes: candidate.reasonCodes,
     })),
   };
 
