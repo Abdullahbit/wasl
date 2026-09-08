@@ -15,6 +15,8 @@ import { resourceRouter } from './modules/resources/resource.router.js'
 import { opportunityRouter } from './modules/opportunities/opportunity.router.js'
 import { recommendationRouter } from './modules/recommendations/recommendation.router.js'
 import { aiRouter } from './modules/ai/ai.router.js'
+import { analyticsRouter } from './modules/analytics/analytics.router.js'
+import { verificationRouter } from './modules/verification/verification.router.js'
 
 export function createApp(): { app: Express; v1Router: Router } {
   const app = express()
@@ -76,6 +78,12 @@ export function createApp(): { app: Express; v1Router: Router } {
 
   // AI navigator routes (auth required, rate limited)
   v1Router.use('/ai', aiRouter)
+
+  // Analytics routes (auth required)
+  v1Router.use('/analytics', analyticsRouter)
+
+  // Verification routes (public read, admin write)
+  v1Router.use('/verification', verificationRouter)
 
   // 404 handler
   app.use((_req, _res, next) => {
