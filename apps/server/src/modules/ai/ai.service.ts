@@ -6,9 +6,9 @@ import { Profile, Community } from '@prisma/client';
 import { RecommendationResponse, NavigatorResponseSchema, NavigatorResponse } from '@wasl/contracts';
 import { scoreCommunity, selectTopCommunities } from '../recommendations/recommendation.service.js';
 import { serializeCommunity } from '../communities/community.serializer.js';
-import { environment } from '../../config/env.js';
 import { logger } from '../../config/logger.js';
 import { NAVIGATOR_PROMPT_V1 } from './navigator.prompt.js';
+import { createOpenAiNavigator } from './openai.provider.js';
 
 const MAXIMUM_AI_CANDIDATES = 10;
 const AI_REQUEST_TIMEOUT_MILLISECONDS = 15_000;
@@ -22,16 +22,12 @@ export interface AiNavigatorProvider {
 }
 
 /**
- * This boundary is intentionally provider-neutral. A teammate can replace this adapter
- * without changing route, ranking, or validation code. It fails closed until configured.
+ * Real provider adapter: OpenAI-compatible via fetch.
+ * Keeps boundary provider-neutral; controllers still call generateRecommendations().
  */
 const configuredAiProvider: AiNavigatorProvider = {
-  async createNavigator() {
-    if (!environment.AI_PROVIDER_API_KEY) {
-      throw new Error('AI_PROVIDER_API_KEY is not configured');
-    }
-
-    throw new Error('Connect the selected AI provider in modules/ai/ai.service.ts');
+  async createNavigator(profile, candidates, signal) {
+    return createOpenAiNavigator(profile, candidates, signal);
   },
 };
 
