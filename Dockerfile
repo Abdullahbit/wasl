@@ -1,6 +1,6 @@
 # ── Stage 1: Install dependencies ──
 FROM node:20-alpine AS deps
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache openssl && corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/contracts/package.json packages/contracts/
@@ -28,7 +28,7 @@ RUN pnpm --filter @platform/web build
 
 # ── Stage 5: Production API image ──
 FROM node:20-alpine AS api
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache openssl && corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 COPY --from=build-api /app/node_modules node_modules
 COPY --from=build-api /app/packages/contracts packages/contracts
