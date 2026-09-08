@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "../../",
+    "paths": {
+      "@platform/contracts": ["../../packages/contracts/src/index.ts"]
+    }
+  },
+  "include": ["src", "../../packages/contracts/src"]
+}

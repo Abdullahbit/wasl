@@ -24,6 +24,7 @@ const EnvironmentSchema = z.object({
   RESEND_API_KEY: OptionalSecretSchema,
   EMAIL_FROM: z.string().min(3).default('WASL <onboarding@resend.dev>'),
   AI_PROVIDER_API_KEY: OptionalSecretSchema,
+  AI_PROVIDER_MODEL: OptionalSecretSchema,
 });
 
 const environmentResult = EnvironmentSchema.safeParse(process.env);
