@@ -1,0 +1,60 @@
+services:
+  wisal-db:
+    image: postgres:16-alpine
+    container_name: wisal-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-wisal}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-wisal}
+    volumes:
+      - wisal-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wisal}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  wisal-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    container_name: wisal-api
+    restart: unless-stopped
+    depends_on:
+      wisal-db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      APP_URL: https://wisal.site
+      DATABASE_URL: postgresql://${POSTGRES_USER:-wisal}:${POSTGRES_PASSWORD}@wisal-db:5432/${POSTGRES_DB:-wisal}?schema=public
+      DIRECT_URL: postgresql://${POSTGRES_USER:-wisal}:${POSTGRES_PASSWORD}@wisal-db:5432/${POSTGRES_DB:-wisal}?schema=public
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: https://wisal.site
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-noreply@wisal.site}
+      AI_PROVIDER: ${AI_PROVIDER:-anthropic}
+      AI_PROVIDER_API_KEY: ${AI_PROVIDER_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-claude-3-5-haiku-20241022}
+      CORS_ORIGIN: https://wisal.site
+
+  wisal-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    container_name: wisal-web
+    restart: unless-stopped
+    depends_on:
+      - wisal-api
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wisal.rule=Host(`wisal.site`) || Host(`www.wisal.site`)
+      - traefik.http.routers.wisal.entrypoints=websecure
+      - traefik.http.routers.wisal.tls.certresolver=letsencrypt
+      - traefik.http.services.wisal.loadbalancer.server.port=80
+
+volumes:
+  wisal-pgdata:
