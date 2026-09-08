@@ -5,20 +5,12 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AppShell } from '../layouts/AppShell';
 import { CommunitiesPage } from '../pages/CommunitiesPage';
+import { CommunityDetailsPage } from '../pages/CommunityDetailsPage';
 import { HomePage } from '../pages/HomePage';
 import { OnboardingPage } from '../pages/OnboardingPage';
+import { PlanPage } from '../pages/PlanPage';
 import { PlaceholderPage } from '../pages/PlaceholderPage';
 import { useTranslation } from '../lib/i18n/useTranslation';
-
-function PlanPlaceholder() {
-  const { t } = useTranslation();
-  return <PlaceholderPage title={t('onboarding.placeholders.planTitle')} description={t('onboarding.placeholders.planDescription')} />;
-}
-
-function CommunityDetailsPlaceholder() {
-  const { t } = useTranslation();
-  return <PlaceholderPage title={t('onboarding.placeholders.communityDetailsTitle')} description={t('onboarding.placeholders.communityDetailsDescription')} />;
-}
 
 function ResourcesPlaceholder() {
   const { t } = useTranslation();
@@ -32,9 +24,9 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'onboarding', element: <OnboardingPage /> },
-      { path: 'plan', element: <PlanPlaceholder /> },
+      { path: 'plan', element: <PlanPage /> },
       { path: 'communities', element: <CommunitiesPage /> },
-      { path: 'communities/:id', element: <CommunityDetailsPlaceholder /> },
+      { path: 'communities/:id', element: <CommunityDetailsPage /> },
       { path: 'resources', element: <ResourcesPlaceholder /> },
     ],
   },
