@@ -1,7 +1,7 @@
 import { Router, type IRouter } from 'express'
 import { requireAuth } from '../../middleware/auth.js'
 import { validate } from '../../middleware/validate.js'
-import { ProfileUpdateSchema } from '@platform/contracts'
+import { ProfileUpdateSchema } from './profile.schema.js'
 import * as profileController from './profile.controller.js'
 
 export const profileRouter: IRouter = Router()

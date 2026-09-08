@@ -2,6 +2,7 @@ import * as profileRepo from './profile.repository.js'
 import { NotFoundError } from '../../shared/errors/AppError.js'
 import type { ProfileUpdate } from '@platform/contracts'
 import type { Prisma } from '@prisma/client'
+import { logger } from '../../config/logger.js'
 
 function isProfileComplete(data: {
   originCountry?: string | null | undefined
@@ -58,6 +59,9 @@ export async function markOnboardingComplete(userId: string) {
   if (!isProfileComplete(profile)) {
     throw new Error('Profile is not complete enough to mark as complete')
   }
-  return profileRepo.markProfileComplete(userId)
-  // Analytics event will be wired in Task 10
+  const result = await profileRepo.markProfileComplete(userId)
+  logger.info({ userId }, 'onboarding complete')
+  // Analytics stub — wired in Task 10
+  // analyticsService.track({ userId, event: 'ONBOARDING_COMPLETE' })
+  return result
 }
