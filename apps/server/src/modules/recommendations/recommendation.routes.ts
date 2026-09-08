@@ -1,5 +1,7 @@
 /**
  * Returns deterministic recommendations for the authenticated user's profile.
+ *
+ * Controller is thin: delegates scoring and ranking to recommendation.service.
  */
 
 import { Router, Request, Response } from 'express';
@@ -11,6 +13,8 @@ import { scoreCommunity } from './recommendation.service.js';
 import { serializeCommunity } from '../communities/community.serializer.js';
 
 const router = Router();
+
+const DEFAULT_TOP_N = 5;
 
 router.get(
   '/',
@@ -24,14 +28,21 @@ router.get(
     }
 
     const communities = await prisma.community.findMany({ where: { verified: true } });
-    const recommendations = communities
+
+    const scored = communities
       .map((community) => ({
         communityId: community.id,
         community: serializeCommunity(community),
         score: scoreCommunity(profile, community),
       }))
-      .filter((recommendation) => recommendation.score.score > 0)
-      .sort((first, second) => second.score.score - first.score.score);
+      .filter((recommendation) => recommendation.score.score > 0);
+
+    const recommendations = [...scored]
+      .sort((a, b) => {
+        if (b.score.score !== a.score.score) return b.score.score - a.score.score;
+        return a.communityId.localeCompare(b.communityId);
+      })
+      .slice(0, DEFAULT_TOP_N);
 
     response.json({ data: recommendations, meta: { total: recommendations.length } });
   }),

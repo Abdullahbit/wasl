@@ -4,10 +4,11 @@
 
 import { Profile, Community } from '@prisma/client';
 import { RecommendationResponse, NavigatorResponseSchema, NavigatorResponse } from '@wasl/contracts';
-import { scoreCommunity } from '../recommendations/recommendation.service.js';
+import { scoreCommunity, selectTopCommunities } from '../recommendations/recommendation.service.js';
 import { serializeCommunity } from '../communities/community.serializer.js';
 import { environment } from '../../config/env.js';
 import { logger } from '../../config/logger.js';
+import { NAVIGATOR_PROMPT_V1 } from './navigator.prompt.js';
 
 const MAXIMUM_AI_CANDIDATES = 10;
 const AI_REQUEST_TIMEOUT_MILLISECONDS = 15_000;
@@ -44,10 +45,12 @@ export async function generateRecommendations(
     scoreResult: scoreCommunity(profile, community),
   }));
 
-  const candidates = scoredCommunities
-    .filter((candidate) => candidate.scoreResult.score > 0)
-    .sort((first, second) => second.scoreResult.score - first.scoreResult.score)
-    .slice(0, MAXIMUM_AI_CANDIDATES);
+  const filtered = scoredCommunities.filter((candidate) => candidate.scoreResult.score > 0);
+
+  const candidates = selectTopCommunities(
+    filtered.map((c) => ({ id: c.community.id, community: c.community, scoreResult: c.scoreResult, score: c.scoreResult.score })),
+    MAXIMUM_AI_CANDIDATES,
+  ).map((c) => ({ community: c.community, scoreResult: c.scoreResult }));
 
   const deterministic = candidates.map((candidate) => ({
     communityId: candidate.community.id,
@@ -70,14 +73,34 @@ export async function generateRecommendations(
     warning = 'AI personalization is unavailable. Showing verified deterministic matches.';
   }
 
+  // Centralized prompt ensures AI only uses approved entities (see navigator.prompt.ts)
+  void NAVIGATOR_PROMPT_V1;
+
   if (aiNavigator) {
-    const validIds = new Set(candidates.map((candidate) => candidate.community.id));
-    aiNavigator.nextSteps = aiNavigator.nextSteps.filter((step) => {
-      if (step.relatedCommunityId && !validIds.has(step.relatedCommunityId)) {
-        return false;
-      }
-      return true;
-    });
+    const validCommunityIds = new Set(candidates.map((candidate) => candidate.community.id));
+    // No approved resources in this flow; strip any hallucinated resource IDs.
+    const validResourceIds = new Set<string>();
+
+    aiNavigator.nextSteps = aiNavigator.nextSteps
+      .filter((step) => {
+        if (step.relatedCommunityId && !validCommunityIds.has(step.relatedCommunityId)) {
+          logger.warn({ relatedCommunityId: step.relatedCommunityId }, 'Stripping hallucinated community ID');
+          return false;
+        }
+        if (step.relatedResourceId && !validResourceIds.has(step.relatedResourceId)) {
+          // Allow step but strip hallucinated resource ID
+          delete (step as { relatedResourceId?: string }).relatedResourceId;
+        }
+        return true;
+      })
+      .map((step) => {
+        // Ensure no unknown IDs leak even after filter
+        if (step.relatedResourceId && !validResourceIds.has(step.relatedResourceId)) {
+          const { relatedResourceId: _removed, ...rest } = step;
+          return rest as typeof step;
+        }
+        return step;
+      });
   }
 
   return {

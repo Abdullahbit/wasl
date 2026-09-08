@@ -7,9 +7,19 @@ import { CommunitySchema } from './community.js';
 
 export const RecommendationRequestSchema = z.object({}).strict();
 
+export const RecommendationReasonCodeSchema = z.enum([
+  'UNIVERSITY_MATCH',
+  'INTEREST_MATCH',
+  'GOAL_MATCH',
+  'LANGUAGE_MATCH',
+  'ARRIVAL_MATCH',
+  'NEWCOMER_FRIENDLY',
+]);
+
 export const RecommendationScoreSchema = z.object({
-  score: z.number(),
-  breakdown: z.record(z.string(), z.number()), // e.g., { "University match": 30 }
+  score: z.number().min(0).max(100),
+  breakdown: z.record(z.string(), z.number()),
+  reasonCodes: z.array(RecommendationReasonCodeSchema).optional(),
 });
 
 export const DeterministicRecommendationSchema = z.object({
