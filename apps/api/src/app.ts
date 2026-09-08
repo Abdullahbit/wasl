@@ -11,6 +11,8 @@ import { NotFoundError } from './shared/errors/AppError.js'
 import { authRouter } from './modules/auth/auth.router.js'
 import { profileRouter } from './modules/profiles/profile.router.js'
 import { communityRouter } from './modules/communities/community.router.js'
+import { resourceRouter } from './modules/resources/resource.router.js'
+import { opportunityRouter } from './modules/opportunities/opportunity.router.js'
 
 export function createApp(): { app: Express; v1Router: Router } {
   const app = express()
@@ -60,6 +62,12 @@ export function createApp(): { app: Express; v1Router: Router } {
 
   // Community routes (public)
   v1Router.use('/communities', communityRouter)
+
+  // Resource routes (public)
+  v1Router.use('/resources', resourceRouter)
+
+  // Opportunity routes (public)
+  v1Router.use('/opportunities', opportunityRouter)
 
   // 404 handler
   app.use((_req, _res, next) => {

@@ -20,6 +20,7 @@ export const OpportunityResponseSchema = z.object({
   applicationUrl: z.string().nullable(),
   deadline: z.string().nullable(),
   isVerified: z.boolean(),
+  verificationStatus: z.string().nullable(),
   targetCountry: z.string().nullable(),
   requirements: z.string().nullable(),
   interests: z.array(z.object({ id: z.string(), name: z.string() })),

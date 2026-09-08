@@ -18,6 +18,7 @@ export const ResourceResponseSchema = z.object({
   url: z.string(),
   type: ResourceType,
   isVerified: z.boolean(),
+  verificationStatus: z.string().nullable(),
   category: z.object({ id: z.string(), name: z.string() }).nullable(),
   interests: z.array(z.object({ id: z.string(), name: z.string() })),
   createdAt: z.string(),
