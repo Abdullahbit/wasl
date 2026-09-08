@@ -9,7 +9,7 @@ interface ShellProps {
 }
 
 export const Shell: React.FC<ShellProps> = ({ currentTab, onNavigate, children }) => {
-  const { user, loginDemoUser, logout } = useAuth()
+  const { user, accountType, loginDemoUser, logout } = useAuth()
 
   const navItems = [
     { id: 'landing', label: 'الرئيسية', icon: Compass },
@@ -225,6 +225,30 @@ export const Shell: React.FC<ShellProps> = ({ currentTab, onNavigate, children }
                 </button>
               )
             })}
+
+            {/* If community account or to access community hub */}
+            {accountType === 'COMMUNITY' && (
+              <button
+                onClick={() => onNavigate('community-dashboard')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  paddingBlock: '0.55rem',
+                  paddingInline: '1rem',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: '0.95rem',
+                  fontWeight: currentTab === 'community-dashboard' ? 700 : 500,
+                  color: currentTab === 'community-dashboard' ? '#E97C5F' : 'var(--muted)',
+                  backgroundColor: currentTab === 'community-dashboard' ? 'rgba(233, 124, 95, 0.1)' : 'transparent',
+                  border: currentTab === 'community-dashboard' ? '1px solid rgba(233, 124, 95, 0.3)' : '1px transparent solid',
+                  transition: 'all 0.18s ease',
+                }}
+              >
+                <Users size={18} color="#E97C5F" />
+                <span>لوحة المجتمع</span>
+              </button>
+            )}
           </nav>
 
           {/* User Status / Action Button */}
@@ -280,6 +304,37 @@ export const Shell: React.FC<ShellProps> = ({ currentTab, onNavigate, children }
               >
                 <LogIn size={15} />
                 <span>دخول تجريبي</span>
+              </button>
+            )}
+
+            {accountType === 'COMMUNITY' ? (
+              <button
+                onClick={() => onNavigate('community-dashboard')}
+                className="btn btn-secondary btn-sm"
+                style={{
+                  backgroundColor: 'rgba(233, 124, 95, 0.1)',
+                  borderColor: 'rgba(233, 124, 95, 0.3)',
+                  color: '#E97C5F',
+                  fontWeight: 600,
+                }}
+              >
+                <Users size={15} />
+                <span>إدارة مجتمعي</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => onNavigate('community-signup')}
+                className="btn btn-secondary btn-sm"
+                style={{
+                  fontSize: '0.85rem',
+                  gap: '0.35rem',
+                  borderColor: 'var(--border)',
+                  color: 'var(--foreground)',
+                }}
+                title="تسجيل مجتمع أو نادٍ طلابي"
+              >
+                <Users size={15} color="var(--primary)" />
+                <span>تسجيل مجتمع</span>
               </button>
             )}
 

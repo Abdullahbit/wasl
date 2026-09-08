@@ -55,9 +55,8 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ onComplete }) =>
 
   const availableLanguages = [
     { id: 'lang_arabic', label: 'العربية' },
-    { id: 'lang_english', label: 'الإنجليزية' },
-    { id: 'lang_french', label: 'الفرنسية' },
-    { id: 'lang_spanish', label: 'الإسبانية' },
+    { id: 'lang_turkish', label: 'التركية (Türkçe)' },
+    { id: 'lang_english', label: 'الإنجليزية (English)' },
   ]
 
   const availableInterests = [

@@ -37,6 +37,14 @@ export interface ApiCommunity {
   category: ApiCategory | null
   languages: ApiLanguage[]
   interests: ApiInterest[]
+  city?: string | null
+  location?: string | null
+  targetAudience?: string | null
+  logoUrl?: string | null
+  isNewcomerFriendly?: boolean
+  matchScore?: number
+  matchReasons?: string[]
+  activeInitiatives?: number
   createdAt: string
   updatedAt: string
 }
@@ -259,7 +267,44 @@ export const communitiesApi = {
       return cached.data
     }
 
-    // Try finding in preloaded seeded communities first for immediate 0ms availability
+    // Try finding in community-created profiles from communityStore first
+    const { communityStore } = await import('./communityStore')
+    const userCommunity = communityStore.getCommunityProfileById(id)
+    if (userCommunity) {
+      const formatted: ApiCommunity = {
+        id: userCommunity.id,
+        name: userCommunity.communityName,
+        slug: userCommunity.communityName.toLowerCase().replace(/\s+/g, '-'),
+        description: userCommunity.fullDescription || userCommunity.shortDescription,
+        category: {
+          id: userCommunity.categoryId,
+          name: userCommunity.categoryName,
+          slug: userCommunity.categoryId,
+        },
+        languages: userCommunity.languages,
+        interests: userCommunity.interests,
+        city: userCommunity.city,
+        location: userCommunity.location || null,
+        targetAudience: userCommunity.targetAudience,
+        contactEmail: userCommunity.contactEmail,
+        websiteUrl: userCommunity.websiteUrl || null,
+        joinUrl: userCommunity.joinUrl || null,
+        logoUrl: userCommunity.logoUrl || null,
+        isNewcomerFriendly: userCommunity.isNewcomerFriendly,
+        isVerified: userCommunity.verificationStatus === 'VERIFIED',
+        verificationStatus: userCommunity.verificationStatus,
+        memberCount: userCommunity.memberCount || 1,
+        activeInitiatives: 1,
+        matchScore: 95,
+        matchReasons: ['مجتمع جديد تم إضافته وينصح به للقادمين والطلاب'],
+        createdAt: userCommunity.createdAt,
+        updatedAt: userCommunity.updatedAt,
+      }
+      clientCache.set(cacheKey, { data: formatted, timestamp: Date.now() })
+      return formatted
+    }
+
+    // Try finding in preloaded seeded communities for immediate 0ms availability
     const seeded = SEEDED_COMMUNITIES_BY_ID.get(id)
 
     try {

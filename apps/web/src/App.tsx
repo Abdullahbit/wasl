@@ -8,6 +8,9 @@ import { CommunitiesPage } from './pages/CommunitiesPage'
 import { CommunityDetailPage } from './pages/CommunityDetailPage'
 import { GuideDetailPage } from './pages/GuideDetailPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { CommunitySignupPage } from './pages/CommunitySignupPage'
+import { CommunityProfileSetupPage } from './pages/CommunityProfileSetupPage'
+import { CommunityDashboardPage } from './pages/CommunityDashboardPage'
 import { AiChatWidget } from './components/common/AiChatWidget'
 
 export function App() {
@@ -59,7 +62,26 @@ export function App() {
 
         {currentTab === 'profile' && <ProfilePage onNavigate={handleNavigate} />}
 
-        {/* Global AI Assistant Floating Widget (GPT-4o) */}
+        {/* Community User Management Flow */}
+        {currentTab === 'community-signup' && (
+          <CommunitySignupPage
+            onSuccess={(tab) => handleNavigate(tab)}
+            onCancel={() => handleNavigate('landing')}
+          />
+        )}
+
+        {currentTab === 'community-profile-setup' && (
+          <CommunityProfileSetupPage
+            onComplete={(tab) => handleNavigate(tab)}
+            onCancel={() => handleNavigate('community-dashboard')}
+          />
+        )}
+
+        {currentTab === 'community-dashboard' && (
+          <CommunityDashboardPage onNavigate={handleNavigate} />
+        )}
+
+        {/* Global AI Assistant Floating Widget */}
         <AiChatWidget onNavigate={handleNavigate} />
       </Shell>
     </AuthProvider>

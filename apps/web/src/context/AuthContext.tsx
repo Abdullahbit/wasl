@@ -1,13 +1,19 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { authApi, profileApi, type ApiUser, type ApiProfile } from '../lib/api'
+import { communityStore, type CommunityUserProfile, type AccountType } from '../lib/communityStore'
 
 interface AuthContextType {
   user: ApiUser | null
   profile: ApiProfile | null
+  accountType: AccountType
+  communityProfile: CommunityUserProfile | null
   isLoading: boolean
   isAuthenticated: boolean
   loginDemoUser: () => Promise<void>
+  loginAsCommunity: (name: string, email: string) => Promise<void>
+  switchAccountType: (type: AccountType) => void
   refreshProfile: () => Promise<void>
+  refreshCommunityProfile: () => void
   logout: () => Promise<void>
   ensureAuthenticated: () => Promise<void>
 }
@@ -17,7 +23,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<ApiUser | null>(null)
   const [profile, setProfile] = useState<ApiProfile | null>(null)
+  const [accountType, setAccountType] = useState<AccountType>(() => {
+    return (localStorage.getItem('wasl_account_type') as AccountType) || 'STUDENT'
+  })
+  const [communityProfile, setCommunityProfile] = useState<CommunityUserProfile | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
+
+  const refreshCommunityProfile = useCallback(() => {
+    if (user) {
+      const cp = communityStore.getCommunityProfile(user.id)
+      setCommunityProfile(cp)
+    }
+  }, [user])
+
+  const switchAccountType = useCallback((type: AccountType) => {
+    setAccountType(type)
+    localStorage.setItem('wasl_account_type', type)
+  }, [])
 
   const refreshProfile = useCallback(async () => {
     try {
@@ -26,7 +48,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {
       setProfile(null)
     }
-  }, [])
+    refreshCommunityProfile()
+  }, [refreshCommunityProfile])
 
   const loginDemoUser = useCallback(async () => {
     setIsLoading(true)
@@ -77,12 +100,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initAuth()
   }, [loginDemoUser, refreshProfile])
 
+  const loginAsCommunity = useCallback(async (name: string, email: string) => {
+    setIsLoading(true)
+    try {
+      // Set user as community account
+      setUser({
+        id: `com_user_${Date.now()}`,
+        name,
+        email,
+        role: 'COMMUNITY',
+        emailVerified: true,
+      })
+      switchAccountType('COMMUNITY')
+      refreshCommunityProfile()
+    } finally {
+      setIsLoading(false)
+    }
+  }, [switchAccountType, refreshCommunityProfile])
+
   const logout = useCallback(async () => {
     try {
       await authApi.signOut()
     } finally {
       setUser(null)
       setProfile(null)
+      setCommunityProfile(null)
     }
   }, [])
 
@@ -91,10 +133,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         profile,
+        accountType,
+        communityProfile,
         isLoading,
         isAuthenticated: !!user,
         loginDemoUser,
+        loginAsCommunity,
+        switchAccountType,
         refreshProfile,
+        refreshCommunityProfile,
         logout,
         ensureAuthenticated,
       }}

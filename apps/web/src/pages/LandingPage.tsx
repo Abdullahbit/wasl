@@ -149,6 +149,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             </button>
           </div>
 
+          {/* Community Organization Entry Point Banner */}
+          <div style={{ marginTop: '1.25rem' }}>
+            <button
+              onClick={() => onNavigate('community-signup')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--primary)',
+                fontSize: '0.92rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                textDecoration: 'underline',
+                textUnderlineOffset: '4px',
+              }}
+            >
+              <Users size={16} />
+              <span>هل تمثل نادياً طلابياً أو مجتمعاً؟ سجّل مجتمعك وانشر فعالياتك مجاناً</span>
+            </button>
+          </div>
+
           {/* Trust points */}
           <div
             style={{

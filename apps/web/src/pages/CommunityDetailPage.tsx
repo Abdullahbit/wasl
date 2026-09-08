@@ -23,6 +23,7 @@ import { useAuth } from '../context/AuthContext'
 import { translate } from '../lib/translations'
 
 import { SEEDED_COMMUNITIES_BY_ID } from '../lib/seededFallback'
+import { communityStore } from '../lib/communityStore'
 
 interface CommunityDetailPageProps {
   communityId: string
@@ -532,6 +533,126 @@ export const CommunityDetailPage: React.FC<CommunityDetailPageProps> = ({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Activities & Events Section */}
+      <div style={{ marginTop: '3rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+              <Calendar size={22} color="var(--primary)" />
+              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--foreground)' }}>
+                الفعاليات والأنشطة القادمة لهذا المجتمع
+              </h2>
+            </div>
+            <p style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>
+              لقاءات دورية وورش عمل تفاعلية مفتوحة لانضمام ومشاركة الطلاب
+            </p>
+          </div>
+
+          <span className="badge badge-primary" style={{ padding: '0.35rem 0.85rem', fontSize: '0.85rem' }}>
+            {communityStore.getPublishedActivities(community.id).length} فعاليات مجدولة
+          </span>
+        </div>
+
+        {communityStore.getPublishedActivities(community.id).length === 0 ? (
+          <div
+            className="card"
+            style={{
+              padding: '2.5rem 1.5rem',
+              textAlign: 'center',
+              backgroundColor: 'var(--surface)',
+              border: '1px dashed var(--border)',
+            }}
+          >
+            <Calendar size={36} color="var(--muted)" style={{ margin: '0 auto 0.75rem', opacity: 0.6 }} />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+              لا توجد فعاليات معلنة حالياً
+            </h3>
+            <p style={{ color: 'var(--muted)', fontSize: '0.88rem', maxWidth: '420px', marginInline: 'auto' }}>
+              لم يعلن هذا المجتمع عن فعاليات قادمة في الوقت الحالي. يمكنك الانضمام مباشرة إلى مجموعة المحادثة الرسمية للمجتمع لمعرفة المواعيد الجديدة فور صدورها.
+            </p>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+              gap: '1.25rem',
+            }}
+          >
+            {communityStore.getPublishedActivities(community.id).map((act) => (
+              <div
+                key={act.id}
+                className="card"
+                style={{
+                  padding: '1.5rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
+                    <span className="badge badge-accent" style={{ fontSize: '0.82rem' }}>
+                      {act.activityType}
+                    </span>
+                    {act.isNewcomerFriendly && (
+                      <span className="badge badge-success" style={{ fontSize: '0.78rem' }}>
+                        مرحب بالمستجدين
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.5rem', lineHeight: 1.4 }}>
+                    {act.title}
+                  </h3>
+
+                  <p style={{ fontSize: '0.88rem', color: 'var(--muted)', lineHeight: 1.6, marginBottom: '1rem' }}>
+                    {act.description}
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.84rem', color: 'var(--muted)', marginBottom: '1.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Calendar size={15} color="var(--primary)" />
+                      <span>{act.date} ({act.startTime} {act.endTime ? `- ${act.endTime}` : ''})</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <MapPin size={15} color="var(--primary)" />
+                      <span>{act.location}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Languages size={15} color="var(--primary)" />
+                      <span>اللغة: {act.language}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
+                  {act.registrationUrl ? (
+                    <a
+                      href={act.registrationUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-primary btn-sm"
+                      style={{ width: '100%', justifyContent: 'center', gap: '0.4rem' }}
+                    >
+                      <span>التسجيل / حضور الفعالية</span>
+                      <ExternalLink size={14} />
+                    </a>
+                  ) : (
+                    <span className="badge badge-muted" style={{ display: 'block', textAlign: 'center' }}>
+                      حضور مباشر ومجاني
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

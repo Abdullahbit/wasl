@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import { translate } from '../lib/translations'
 
 import { SEEDED_COMMUNITIES_PREVIEW } from '../lib/seededFallback'
+import { communityStore } from '../lib/communityStore'
 
 interface CommunitiesPageProps {
   onNavigate: (tab: string, param?: string) => void
@@ -14,20 +15,56 @@ interface CommunitiesPageProps {
 
 export const CommunitiesPage: React.FC<CommunitiesPageProps> = ({ onNavigate }) => {
   const { profile } = useAuth()
-  // Immediate 0ms render with seeded communities so user never waits for remote DB query
-  const [communities, setCommunities] = useState<ApiCommunity[]>(SEEDED_COMMUNITIES_PREVIEW)
+  
+  // Helper to get formatted community created profiles
+  const getCreatedCommunities = (): ApiCommunity[] => {
+    return communityStore.getAllCommunityCreated().map((c) => ({
+      id: c.id,
+      name: c.communityName,
+      slug: c.communityName.toLowerCase().replace(/\s+/g, '-'),
+      description: c.shortDescription || c.fullDescription,
+      category: {
+        id: c.categoryId,
+        name: c.categoryName,
+        slug: c.categoryId,
+      },
+      languages: c.languages,
+      interests: c.interests,
+      city: c.city,
+      location: c.location || null,
+      targetAudience: c.targetAudience,
+      contactEmail: c.contactEmail,
+      websiteUrl: c.websiteUrl || null,
+      joinUrl: c.joinUrl || null,
+      logoUrl: c.logoUrl || null,
+      isNewcomerFriendly: c.isNewcomerFriendly,
+      isVerified: c.verificationStatus === 'VERIFIED',
+      verificationStatus: c.verificationStatus,
+      memberCount: c.memberCount || 1,
+      activeInitiatives: 1,
+      matchScore: 94,
+      matchReasons: ['مجتمع جديد تم إضافته حديثاً في وصل'],
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+    }))
+  }
+
+  // Immediate render with seeded + communityStore profiles
+  const initialMerged = [...getCreatedCommunities(), ...SEEDED_COMMUNITIES_PREVIEW]
+  const [communities, setCommunities] = useState<ApiCommunity[]>(initialMerged)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [search, setSearch] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [selectedLanguage, setSelectedLanguage] = useState<string>('')
   const [selectedInterest, setSelectedInterest] = useState<string>('')
-  const [totalCount, setTotalCount] = useState<number>(SEEDED_COMMUNITIES_PREVIEW.length)
+  const [totalCount, setTotalCount] = useState<number>(initialMerged.length)
 
   // Why this modal state
   const [activeWhyCommunity, setActiveWhyCommunity] = useState<ApiCommunity | null>(null)
 
   const categories = [
     { id: '', label: 'جميع التصنيفات' },
+    { id: 'cat_student_community', label: 'مجتمع طلابي وأكاديمي' },
     { id: 'cat_immigration_support', label: 'الدعم القانوني والهجرة' },
     { id: 'cat_professional_development', label: 'التطوير المهني والعمل' },
     { id: 'cat_social_integration', label: 'الاندماج الاجتماعي والأنشطة' },
@@ -36,9 +73,8 @@ export const CommunitiesPage: React.FC<CommunitiesPageProps> = ({ onNavigate }) 
   const languages = [
     { id: '', label: 'جميع اللغات' },
     { id: 'lang_arabic', label: 'العربية' },
+    { id: 'lang_turkish', label: 'التركية' },
     { id: 'lang_english', label: 'الإنجليزية' },
-    { id: 'lang_french', label: 'الفرنسية' },
-    { id: 'lang_spanish', label: 'الإسبانية' },
   ]
 
   const interests = [
@@ -53,6 +89,7 @@ export const CommunitiesPage: React.FC<CommunitiesPageProps> = ({ onNavigate }) 
 
   const loadCommunities = async (showSkeleton = false) => {
     if (showSkeleton) setIsLoading(true)
+    const userCreated = getCreatedCommunities()
     try {
       const res = await communitiesApi.list({
         search: search || undefined,
@@ -61,12 +98,35 @@ export const CommunitiesPage: React.FC<CommunitiesPageProps> = ({ onNavigate }) 
         interestId: selectedInterest || undefined,
         limit: 50,
       })
-      if (res.data && res.data.length > 0) {
-        setCommunities(res.data)
-        setTotalCount(res.meta?.total || res.data.length)
+      const apiData = res.data && res.data.length > 0 ? res.data : SEEDED_COMMUNITIES_PREVIEW
+      
+      // Filter userCreated if filters are active
+      let filteredCreated = userCreated
+      if (search) {
+        const s = search.toLowerCase()
+        filteredCreated = filteredCreated.filter(
+          (c) => c.name.toLowerCase().includes(s) || c.description.toLowerCase().includes(s)
+        )
       }
+      if (selectedCategory) {
+        filteredCreated = filteredCreated.filter((c) => c.category?.id === selectedCategory)
+      }
+
+      // Merge: unique by ID, created profiles first
+      const seen = new Set<string>()
+      const merged: ApiCommunity[] = []
+      for (const item of [...filteredCreated, ...apiData]) {
+        if (!seen.has(item.id)) {
+          seen.add(item.id)
+          merged.push(item)
+        }
+      }
+
+      setCommunities(merged)
+      setTotalCount(merged.length)
     } catch (err) {
       console.error('Failed to load communities:', err)
+      setCommunities([...userCreated, ...SEEDED_COMMUNITIES_PREVIEW])
     } finally {
       setIsLoading(false)
     }

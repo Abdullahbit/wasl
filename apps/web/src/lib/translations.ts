@@ -30,17 +30,13 @@ export const ARABIC_MAPPINGS: Record<string, string> = {
   'Cultural Events': 'الفعاليات الثقافية واللقاءات',
   'Language Learning': 'تعلم وممارسة اللغات',
 
-  // Languages from backend seed
-  lang_english: 'الإنجليزية',
+  // Languages (Arabic, Turkish, English only)
   lang_arabic: 'العربية',
-  lang_spanish: 'الإسبانية',
-  lang_french: 'الفرنسية',
-  lang_mandarin: 'المندرين (الصينية)',
-  English: 'الإنجليزية',
+  lang_turkish: 'التركية',
+  lang_english: 'الإنجليزية',
   Arabic: 'العربية',
-  Spanish: 'الإسبانية',
-  French: 'الفرنسية',
-  Mandarin: 'المندرين (الصينية)',
+  Turkish: 'التركية',
+  English: 'الإنجليزية',
 
   // Cities
   Istanbul: 'إسطنبول',
