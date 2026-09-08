@@ -18,6 +18,7 @@ export const CommunityResponseSchema = z.object({
   joinUrl: z.string().nullable(),
   memberCount: z.number().nullable(),
   isVerified: z.boolean(),
+  verificationStatus: z.string().nullable(),
   category: z.object({ id: z.string(), name: z.string(), slug: z.string() }).nullable(),
   languages: z.array(z.object({ id: z.string(), code: z.string(), name: z.string() })),
   interests: z.array(z.object({ id: z.string(), name: z.string(), slug: z.string() })),
