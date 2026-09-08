@@ -1,0 +1,55 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Profile {
+  id             String   @id @default(uuid())
+  city           String
+  university     String
+  arrivalStage   String
+  turkishLevel   String
+  specialization String
+  interests      String[]
+  goals          String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Community {
+  id               String    @id @default(uuid())
+  name             String
+  description      String
+  category         String
+  languages        String[]
+  universities     String[]
+  interests        String[]
+  location         String?
+  targetAudience   String?
+  joinUrl          String?
+  newcomerFriendly Boolean   @default(false)
+  verified         Boolean   @default(false)
+  lastReviewed     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Resource {
+  id           String    @id @default(uuid())
+  title        String
+  description  String
+  category     String
+  url          String
+  source       String
+  lastReviewed DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
