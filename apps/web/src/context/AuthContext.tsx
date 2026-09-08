@@ -53,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginDemoUser = useCallback(async () => {
     setIsLoading(true)
+    localStorage.removeItem('wasl_user_logged_out')
     try {
       // Login with pre-seeded demo user from backend seed.ts
       const res = await authApi.signIn('user@platform.test', 'UserPass123!')
@@ -67,6 +68,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const ensureAuthenticated = useCallback(async () => {
     if (user) return
+    const loggedOutFlag = localStorage.getItem('wasl_user_logged_out') === 'true'
+    if (loggedOutFlag) return
+
     try {
       const session = await authApi.getSession()
       if (session.user) {
@@ -82,13 +86,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     async function initAuth() {
+      const loggedOutFlag = localStorage.getItem('wasl_user_logged_out') === 'true'
+      if (loggedOutFlag) {
+        setIsLoading(false)
+        return
+      }
+
       try {
         const session = await authApi.getSession()
         if (session.user) {
           setUser(session.user)
           await refreshProfile()
         } else {
-          // In demo mode, automatically log in as seeded test user
+          // In initial demo mode, log in as seeded test user
           await loginDemoUser()
         }
       } catch {
@@ -102,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginAsCommunity = useCallback(async (name: string, email: string) => {
     setIsLoading(true)
+    localStorage.removeItem('wasl_user_logged_out')
     try {
       // Set user as community account
       setUser({
@@ -119,12 +130,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [switchAccountType, refreshCommunityProfile])
 
   const logout = useCallback(async () => {
+    setIsLoading(true)
     try {
-      await authApi.signOut()
+      localStorage.setItem('wasl_user_logged_out', 'true')
+      await authApi.signOut().catch(() => {})
     } finally {
       setUser(null)
       setProfile(null)
       setCommunityProfile(null)
+      setIsLoading(false)
     }
   }, [])
 

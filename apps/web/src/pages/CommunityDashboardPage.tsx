@@ -426,6 +426,48 @@ export const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = ({
               </div>
             )}
 
+            {/* Quick Demo Activity Autofill */}
+            {!editingActivity && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.75rem' }}>
+                <button
+                  type="button"
+                  id="btn-quick-fill-activity"
+                  onClick={() => {
+                    setTitle('هاكاثون وصل البرمجي السنوي 2026')
+                    setDescription('تحدي برمجي مكثف لمدة يوم كامل للطلاب العرب في الجامعات التركية لبناء حلول تقنية ذكية تخدم الجالية والمجتمع الطلابي، مع جوائز وإرشاد من مهندسين محترفين.')
+                    setActivityType('WORKSHOP')
+                    setDate('2026-10-15')
+                    setStartTime('14:00')
+                    setEndTime('18:00')
+                    setLocation('إسطنبول - مركز ريادة الأعمال والابتكار (مسلك)')
+                    setIsOnline(false)
+                    setLanguage('العربية')
+                    setTargetAudience('طلاب كليات الهندسة، علوم الحاسوب، والمصممين')
+                    setRegistrationUrl('https://wasl.app/hackathon2026')
+                    setCapacity('50')
+                    setIsNewcomerFriendly(true)
+                    setStatus('PUBLISHED')
+                  }}
+                  style={{
+                    background: 'none',
+                    border: '1px dashed var(--primary)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '0.3rem 0.65rem',
+                    color: 'var(--primary)',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                  }}
+                >
+                  <Sparkles size={13} />
+                  <span>تعبئة فعالية تجريبية نموذجية</span>
+                </button>
+              </div>
+            )}
+
             <form onSubmit={handleSaveActivity} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, marginBottom: '0.35rem' }}>

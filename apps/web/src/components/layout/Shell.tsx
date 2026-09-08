@@ -1,5 +1,5 @@
 import React from 'react'
-import { Compass, Sparkles, Users, User, ArrowUpRight, LogIn } from 'lucide-react'
+import { Compass, Sparkles, Users, User, ArrowUpRight, LogIn, LogOut } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
 interface ShellProps {
@@ -295,6 +295,22 @@ export const Shell: React.FC<ShellProps> = ({ currentTab, onNavigate, children }
                     {user.name}
                   </span>
                 </div>
+
+                <button
+                  onClick={async () => {
+                    await logout()
+                    onNavigate('landing')
+                  }}
+                  className="btn btn-ghost btn-xs"
+                  style={{
+                    color: 'var(--muted)',
+                    padding: '0.35rem',
+                    borderRadius: 'var(--radius-full)',
+                  }}
+                  title="تسجيل الخروج"
+                >
+                  <LogOut size={16} />
+                </button>
               </div>
             ) : (
               <button

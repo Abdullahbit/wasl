@@ -206,6 +206,36 @@ export const CommunitySignupPage: React.FC<CommunitySignupPageProps> = ({
           </div>
         )}
 
+        {/* Quick Demo Autofill Button */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+          <button
+            type="button"
+            id="btn-quick-fill-community"
+            onClick={() => {
+              setSelectedRole('COMMUNITY')
+              setName('نادي البرمجة والذكاء الاصطناعي')
+              setEmail('tech-club@wasl-community.org')
+              setPassword('CommunityPass2026!')
+            }}
+            style={{
+              background: 'none',
+              border: '1px dashed var(--primary)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.35rem 0.75rem',
+              color: 'var(--primary)',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+            }}
+          >
+            <Sparkles size={13} />
+            <span>ملء بيانات تجريبية سريعة لمجتمع</span>
+          </button>
+        </div>
+
         {/* Signup Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>

@@ -199,7 +199,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
           </div>
 
           <button
-            onClick={() => logout()}
+            onClick={async () => {
+              await logout()
+              onNavigate('landing')
+            }}
             className="btn btn-ghost btn-sm"
             style={{ color: 'var(--danger)', gap: '0.35rem' }}
           >

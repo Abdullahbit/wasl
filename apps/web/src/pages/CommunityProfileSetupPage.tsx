@@ -199,6 +199,45 @@ export const CommunityProfileSetupPage: React.FC<CommunityProfileSetupPageProps>
           </div>
         )}
 
+        {/* Quick Demo Autofill Helper */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+          <button
+            type="button"
+            id="btn-quick-fill-profile"
+            onClick={() => {
+              setCommunityName('نادي البرمجة والذكاء الاصطناعي')
+              setShortDescription('مجتمع تقني طلابي يهدف لتأهيل المطورين والمهندسين العرب لسوق العمل التركي والعالمي.')
+              setFullDescription('نادي طلابي تقني تأسس لمساعدة الطلاب العرب في الجامعات التركية على تعلم أحدث تقنيات البرمجة، والذكاء الاصطناعي، وتطوير الويب وتطبيقات الهواتف، بالإضافة لتنظيم هاكاثونات ومشاريع تخرج مشتركة وورش عمل مع خبراء الصناعة.')
+              setCategoryId('cat_student_community')
+              setUniversityAffiliation('جامعة اسطنبول التقنية - ITU')
+              setCity('إسطنبول')
+              setTargetAudience('طلاب كليات الهندسة وعلوم الحاسوب والمهتمين بالبرمجة والذكاء الاصطناعي')
+              setSelectedLanguages(['lang_arabic', 'lang_turkish', 'lang_english'])
+              setSelectedInterests(['int_education', 'int_employment', 'int_networking'])
+              setContactEmail('tech-club@wasl-community.org')
+              setWebsiteUrl('https://itu-tech-club.org')
+              setJoinUrl('https://t.me/wasl_tech_club')
+              setIsNewcomerFriendly(true)
+            }}
+            style={{
+              background: 'none',
+              border: '1px dashed var(--primary)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '0.35rem 0.75rem',
+              color: 'var(--primary)',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+            }}
+          >
+            <Sparkles size={13} />
+            <span>ملء ملف تجريبي متكامل بنقرة واحدة</span>
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Section 1: Basic Information */}
           <div>
