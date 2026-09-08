@@ -1,14 +1,27 @@
 {
   "name": "wasl",
   "private": true,
+  "packageManager": "pnpm@10.15.1",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "scripts": {
-    "dev": "pnpm -r --parallel run dev",
-    "build": "pnpm -r run build",
-    "lint": "pnpm -r run lint",
-    "test": "pnpm -r run test",
-    "typecheck": "pnpm -r run typecheck"
+    "dev": "corepack pnpm -r --parallel run dev",
+    "build": "corepack pnpm -r run build",
+    "lint": "corepack pnpm -r run lint",
+    "test": "corepack pnpm -r --if-present run test",
+    "typecheck": "corepack pnpm -r run typecheck",
+    "check": "corepack pnpm typecheck && corepack pnpm lint && corepack pnpm test && corepack pnpm build",
+    "db:generate": "corepack pnpm --filter @wasl/api db:generate",
+    "db:migrate": "corepack pnpm --filter @wasl/api db:migrate",
+    "db:deploy": "corepack pnpm --filter @wasl/api db:deploy",
+    "db:seed": "corepack pnpm --filter @wasl/api db:seed"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.20"
   }
 }

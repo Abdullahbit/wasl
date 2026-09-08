@@ -1,86 +1,117 @@
+/**
+ * Grounds AI navigation in deterministic, approved community candidates.
+ */
+
 import { Profile, Community } from '@prisma/client';
 import { RecommendationResponse, NavigatorResponseSchema, NavigatorResponse } from '@wasl/contracts';
 import { scoreCommunity } from '../recommendations/recommendation.service.js';
+import { serializeCommunity } from '../communities/community.serializer.js';
+import { environment } from '../../config/env.js';
+import { logger } from '../../config/logger.js';
 
-export const generateRecommendations = async (
+const MAXIMUM_AI_CANDIDATES = 10;
+const AI_REQUEST_TIMEOUT_MILLISECONDS = 15_000;
+
+export interface AiNavigatorProvider {
+  createNavigator(
+    profile: Profile,
+    candidates: Community[],
+    cancellationSignal: AbortSignal,
+  ): Promise<unknown>;
+}
+
+/**
+ * This boundary is intentionally provider-neutral. A teammate can replace this adapter
+ * without changing route, ranking, or validation code. It fails closed until configured.
+ */
+const configuredAiProvider: AiNavigatorProvider = {
+  async createNavigator() {
+    if (!environment.AI_PROVIDER_API_KEY) {
+      throw new Error('AI_PROVIDER_API_KEY is not configured');
+    }
+
+    throw new Error('Connect the selected AI provider in modules/ai/ai.service.ts');
+  },
+};
+
+export async function generateRecommendations(
   profile: Profile,
-  communities: Community[]
-): Promise<RecommendationResponse> => {
-  // 1. Deterministic Scoring
-  const scored = communities.map(community => ({
+  communities: Community[],
+  aiProvider: AiNavigatorProvider = configuredAiProvider,
+): Promise<RecommendationResponse> {
+  const scoredCommunities = communities.map((community) => ({
     community,
-    scoreResult: scoreCommunity(profile, community)
+    scoreResult: scoreCommunity(profile, community),
   }));
 
-  // 2. Filter & Sort Candidates
-  // Only keep communities with > 0 score and sort descending
-  const candidates = scored
-    .filter(c => c.scoreResult.score > 0)
-    .sort((a, b) => b.scoreResult.score - a.scoreResult.score)
-    .slice(0, 10); // Take top 10 as context for AI
+  const candidates = scoredCommunities
+    .filter((candidate) => candidate.scoreResult.score > 0)
+    .sort((first, second) => second.scoreResult.score - first.scoreResult.score)
+    .slice(0, MAXIMUM_AI_CANDIDATES);
 
-  const deterministic = candidates.map(c => ({
-    communityId: c.community.id,
-    community: c.community,
-    score: c.scoreResult,
+  const deterministic = candidates.map((candidate) => ({
+    communityId: candidate.community.id,
+    community: serializeCommunity(candidate.community),
+    score: candidate.scoreResult,
   }));
 
-  // 3. AI Personalization Boundary
-  let aiNavigator: NavigatorResponse | undefined = undefined;
-  let errorFallback: string | undefined = undefined;
+  let aiNavigator: NavigatorResponse | undefined;
+  let warning: string | undefined;
 
   try {
-    aiNavigator = await callAiProvider(profile, candidates.map(c => c.community));
-  } catch (err) {
-    console.error('AI Provider failed, falling back to deterministic only', err);
-    errorFallback = 'AI Personalization is temporarily unavailable. Displaying best matches.';
+    const providerResponse = await createNavigatorWithTimeout(
+      aiProvider,
+      profile,
+      candidates.map((candidate) => candidate.community),
+    );
+    aiNavigator = NavigatorResponseSchema.parse(providerResponse);
+  } catch (error) {
+    logger.warn({ error }, 'AI navigator failed; returning deterministic recommendations');
+    warning = 'AI personalization is unavailable. Showing verified deterministic matches.';
   }
 
-  // 4. Verification Boundary (Never trust AI IDs blindly)
   if (aiNavigator) {
-    const validIds = new Set(candidates.map(c => c.community.id));
-    aiNavigator.nextSteps = aiNavigator.nextSteps.filter(step => {
+    const validIds = new Set(candidates.map((candidate) => candidate.community.id));
+    aiNavigator.nextSteps = aiNavigator.nextSteps.filter((step) => {
       if (step.relatedCommunityId && !validIds.has(step.relatedCommunityId)) {
-        return false; // Reject step if it hallucinates an ID
+        return false;
       }
       return true;
     });
   }
 
   return {
-    navigator: aiNavigator,
     deterministic,
-    error: errorFallback,
+    ...(aiNavigator ? { navigator: aiNavigator } : {}),
+    ...(warning ? { warning } : {}),
   };
-};
+}
 
 /**
- * Mocking the AI provider call for the hackathon MVP.
- * In reality, this would use fetch() or an SDK with structured outputs.
+ * Bounds provider latency and supplies an abort signal so adapters can cancel network work.
  */
-async function callAiProvider(profile: Profile, candidates: Community[]): Promise<NavigatorResponse> {
-  // Simulating an AI call timeout / delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  if (!process.env.AI_PROVIDER_API_KEY) {
-    throw new Error('AI API key not set');
+async function createNavigatorWithTimeout(
+  aiProvider: AiNavigatorProvider,
+  profile: Profile,
+  candidates: Community[],
+) {
+  const abortController = new AbortController();
+  let timeoutIdentifier: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_resolve, reject) => {
+    timeoutIdentifier = setTimeout(() => {
+      abortController.abort();
+      reject(new Error('AI provider request timed out'));
+    }, AI_REQUEST_TIMEOUT_MILLISECONDS);
+  });
+
+  try {
+    return await Promise.race([
+      aiProvider.createNavigator(profile, candidates, abortController.signal),
+      timeoutPromise,
+    ]);
+  } finally {
+    if (timeoutIdentifier) {
+      clearTimeout(timeoutIdentifier);
+    }
   }
-
-  // MVP: Return mock valid structured output 
-  // In reality, you'd send `profile` and `candidates` to OpenAI / Claude and parse the JSON.
-  const mockResponse = {
-    summary: `Welcome to Istanbul, arriving for your ${profile.arrivalStage}. Here are your personalized next steps based on your interest in ${profile.interests.join(', ')}.`,
-    nextSteps: [
-      {
-        title: "Join a Tech Community",
-        description: "Connect with like-minded peers in tech.",
-        priority: "High" as const,
-        reason: "You mentioned an interest in Software and AI.",
-        relatedCommunityId: candidates[0]?.id // Grounded with actual ID
-      }
-    ]
-  };
-
-  // Validate with Zod before returning!
-  return NavigatorResponseSchema.parse(mockResponse);
 }

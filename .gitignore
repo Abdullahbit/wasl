@@ -86,6 +86,10 @@ typings/
 .nuxt
 dist
 
+# Generated Prisma migration lock is committed; local database artifacts are not.
+*.db
+*.db-journal
+
 # Gatsby files
 .cache/
 public

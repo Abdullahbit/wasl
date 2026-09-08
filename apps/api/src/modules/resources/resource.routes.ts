@@ -1,39 +1,49 @@
-import { Router, Request, Response, NextFunction } from 'express';
+/**
+ * Exposes read-only, filterable access to curated resource records.
+ */
+
+import { Router, Request, Response } from 'express';
 import { prisma } from '../../db/prisma.js';
+import { IdentifierParametersSchema, ResourceFiltersSchema } from '@wasl/contracts';
+import { validateParams, validateQuery } from '../../middleware/validate.js';
+import { asyncRoute } from '../../shared/utilities/asyncRoute.js';
+import { ApplicationError } from '../../shared/errors/ApplicationError.js';
+import { serializeResource } from './resource.serializer.js';
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
+router.get(
+  '/',
+  validateQuery(ResourceFiltersSchema),
+  asyncRoute(async (request: Request, response: Response) => {
+    const { category } = ResourceFiltersSchema.parse(request.query);
     const resources = await prisma.resource.findMany({
+      ...(category ? { where: { category: { equals: category, mode: 'insensitive' as const } } } : {}),
       orderBy: { createdAt: 'desc' },
     });
-    
-    res.json({
-      data: resources,
-      total: resources.length,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
 
-router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.params;
-    
+    response.json({
+      data: resources.map(serializeResource),
+      meta: { total: resources.length },
+    });
+  }),
+);
+
+router.get(
+  '/:id',
+  validateParams(IdentifierParametersSchema),
+  asyncRoute(async (request: Request, response: Response) => {
+    const { id } = IdentifierParametersSchema.parse(request.params);
     const resource = await prisma.resource.findUnique({
       where: { id },
     });
-    
+
     if (!resource) {
-      return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Resource not found' } });
+      throw new ApplicationError(404, 'NOT_FOUND', 'Resource not found.');
     }
-    
-    res.json(resource);
-  } catch (error) {
-    next(error);
-  }
-});
+
+    response.json({ data: serializeResource(resource) });
+  }),
+);
 
 export default router;

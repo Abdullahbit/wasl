@@ -1,13 +1,40 @@
-import { Router, Request, Response, NextFunction } from 'express';
+/**
+ * Returns deterministic recommendations for the authenticated user's profile.
+ */
+
+import { Router, Request, Response } from 'express';
+import { prisma } from '../../db/prisma.js';
+import { requireAuthenticatedUser } from '../auth/auth.middleware.js';
+import { ApplicationError } from '../../shared/errors/ApplicationError.js';
+import { asyncRoute } from '../../shared/utilities/asyncRoute.js';
+import { scoreCommunity } from './recommendation.service.js';
+import { serializeCommunity } from '../communities/community.serializer.js';
 
 const router = Router();
 
-router.post('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    res.json({ message: 'Not implemented yet' });
-  } catch (error) {
-    next(error);
-  }
-});
+router.get(
+  '/',
+  requireAuthenticatedUser,
+  asyncRoute(async (_request: Request, response: Response) => {
+    const userId = response.locals.session.user.id as string;
+    const profile = await prisma.profile.findUnique({ where: { userId } });
+
+    if (!profile) {
+      throw new ApplicationError(409, 'PROFILE_REQUIRED', 'Complete onboarding first.');
+    }
+
+    const communities = await prisma.community.findMany({ where: { verified: true } });
+    const recommendations = communities
+      .map((community) => ({
+        communityId: community.id,
+        community: serializeCommunity(community),
+        score: scoreCommunity(profile, community),
+      }))
+      .filter((recommendation) => recommendation.score.score > 0)
+      .sort((first, second) => second.score.score - first.score.score);
+
+    response.json({ data: recommendations, meta: { total: recommendations.length } });
+  }),
+);
 
 export default router;

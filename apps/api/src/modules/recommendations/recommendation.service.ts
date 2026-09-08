@@ -1,3 +1,7 @@
+/**
+ * Scores approved communities deterministically so recommendations remain testable.
+ */
+
 import { Profile, Community } from '@prisma/client';
 import { RecommendationScore } from '@wasl/contracts';
 
@@ -10,10 +14,10 @@ const WEIGHTS = {
   NEWCOMER_FRIENDLY: 5,
 };
 
-export const scoreCommunity = (
+export function scoreCommunity(
   profile: Pick<Profile, 'university' | 'interests' | 'goals' | 'turkishLevel' | 'arrivalStage'>,
   community: Pick<Community, 'universities' | 'interests' | 'languages' | 'targetAudience' | 'newcomerFriendly'>
-): RecommendationScore => {
+): RecommendationScore {
   let score = 0;
   const breakdown: Record<string, number> = {};
 
@@ -24,14 +28,16 @@ export const scoreCommunity = (
   }
 
   // 2. Interest match +25
-  const commonInterests = profile.interests.filter(i => community.interests.includes(i));
+  const commonInterests = profile.interests.filter((interest) => {
+    return community.interests.includes(interest);
+  });
   if (commonInterests.length > 0) {
     score += WEIGHTS.INTEREST;
     breakdown['Interest match'] = WEIGHTS.INTEREST;
   }
 
   // 3. Goal match +20
-  const goalMatch = profile.goals.some(g => community.targetAudience?.includes(g));
+  const goalMatch = profile.goals.some((goal) => community.targetAudience?.includes(goal));
   if (goalMatch) {
     score += WEIGHTS.GOAL;
     breakdown['Goal match'] = WEIGHTS.GOAL;
@@ -39,8 +45,9 @@ export const scoreCommunity = (
 
   // 4. Language match +10
   // Simplify: assume English is a fallback or Turkish level is enough.
-  const speaksCommunityLanguage = community.languages.includes('English') || 
-                                  (profile.turkishLevel !== 'None' && community.languages.includes('Turkish'));
+  const speaksCommunityLanguage =
+    community.languages.includes('English') ||
+    (profile.turkishLevel !== 'None' && community.languages.includes('Turkish'));
   if (speaksCommunityLanguage) {
     score += WEIGHTS.LANGUAGE;
     breakdown['Language match'] = WEIGHTS.LANGUAGE;
@@ -62,4 +69,4 @@ export const scoreCommunity = (
     score,
     breakdown
   };
-};
+}

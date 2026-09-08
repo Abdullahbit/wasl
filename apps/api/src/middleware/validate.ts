@@ -1,10 +1,14 @@
+/**
+ * Validates and normalizes incoming request data at HTTP boundaries.
+ */
+
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodTypeAny } from 'zod';
+import { ZodType } from 'zod';
 
-export const validateRequest = (schema: ZodTypeAny) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+export const validateRequest = (schema: ZodType) => {
+  return async (request: Request, _response: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync(req.body);
+      request.body = await schema.parseAsync(request.body);
       next();
     } catch (error) {
       next(error);
@@ -12,10 +16,11 @@ export const validateRequest = (schema: ZodTypeAny) => {
   };
 };
 
-export const validateQuery = (schema: ZodTypeAny) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+export const validateQuery = (schema: ZodType) => {
+  return async (request: Request, _response: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync(req.query);
+      const query = await schema.parseAsync(request.query);
+      Object.assign(request.query, query);
       next();
     } catch (error) {
       next(error);
@@ -23,10 +28,10 @@ export const validateQuery = (schema: ZodTypeAny) => {
   };
 };
 
-export const validateParams = (schema: ZodTypeAny) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+export const validateParams = (schema: ZodType) => {
+  return async (request: Request, _response: Response, next: NextFunction) => {
     try {
-      await schema.parseAsync(req.params);
+      request.params = (await schema.parseAsync(request.params)) as Request['params'];
       next();
     } catch (error) {
       next(error);

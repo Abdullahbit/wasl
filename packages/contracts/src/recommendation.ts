@@ -1,9 +1,11 @@
-import { z } from 'zod';
-import { CommunitySchema } from './community';
+/**
+ * Defines deterministic and AI-assisted recommendation API payloads.
+ */
 
-export const RecommendationRequestSchema = z.object({
-  profileId: z.string().uuid(),
-});
+import { z } from 'zod';
+import { CommunitySchema } from './community.js';
+
+export const RecommendationRequestSchema = z.object({}).strict();
 
 export const RecommendationScoreSchema = z.object({
   score: z.number(),
@@ -31,9 +33,13 @@ export const NavigatorResponseSchema = z.object({
 });
 
 export const RecommendationResponseSchema = z.object({
-  navigator: NavigatorResponseSchema.optional(), // Might be omitted if AI fails
+  navigator: NavigatorResponseSchema.optional(),
   deterministic: z.array(DeterministicRecommendationSchema),
-  error: z.string().optional(), // If AI fallback happened
+  warning: z.string().optional(),
+});
+
+export const RecommendationDataResponseSchema = z.object({
+  data: RecommendationResponseSchema,
 });
 
 export type RecommendationRequest = z.infer<typeof RecommendationRequestSchema>;
@@ -42,3 +48,4 @@ export type RecommendationScore = z.infer<typeof RecommendationScoreSchema>;
 export type AIRecommendationStep = z.infer<typeof AIRecommendationStepSchema>;
 export type NavigatorResponse = z.infer<typeof NavigatorResponseSchema>;
 export type RecommendationResponse = z.infer<typeof RecommendationResponseSchema>;
+export type RecommendationDataResponse = z.infer<typeof RecommendationDataResponseSchema>;

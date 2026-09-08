@@ -1,71 +1,68 @@
-# WASL - AI-Powered Community Navigation
+# WASL
 
-WASL is an AI-powered community navigation platform designed for international students arriving in Türkiye. It helps newcomers transition smoothly by recommending communities, resources, and actionable next steps based on their unique profiles.
+WASL helps international students in Türkiye find verified communities, practical resources, opportunities, and grounded next steps.
 
-## MVP Scope
-The hackathon MVP demonstrates the core value proposition: **"What Should I Do Next?"**
-It focuses on:
-- Smart Onboarding (no registration required)
-- Deterministic Community Matching (based on 10-15 verified communities)
-- AI Personalization (grounded on deterministic candidates)
-- Community Details & Recommendations
+This repository is a production-shaped, hackathon-simple TypeScript monorepo. The browser talks only to the Express API; the API owns authentication, authorization, database access, and AI provider credentials.
 
-*Out of scope for MVP: Authentication, real-time messaging, comprehensive event management, microservices.*
+## Repository map
 
-## Architecture & Tech Stack
-WASL uses a **Modular Monolith** architecture:
-- **Frontend**: React, Vite, Tailwind CSS, TanStack Query, Zod.
-- **Backend**: Express, TypeScript, Prisma, PostgreSQL (Supabase).
-- **AI Boundary**: Server-side strictly validated structured AI responses.
-- **Shared Contracts**: Zod schemas and TypeScript types shared between web and api via pnpm workspace.
-
-## Repository Structure
-```
-wasl/
-├── apps/
-│   ├── web/        # Frontend application
-│   └── api/        # Backend application
-├── packages/
-│   └── contracts/  # Shared Zod schemas and types
-└── docs/           # Documentation
+```text
+apps/
+  web/                 React, Vite, routes, client state, feature UI
+  api/                 Express modular monolith, auth, Prisma, AI boundary
+packages/
+  contracts/           Shared Zod request/response contracts and DTO types
+  config/              Shared strict TypeScript settings
+docs/                  Architecture, API, development, and team guides
 ```
 
-## Local Setup
+## Start locally
 
-### 1. Install Dependencies
+Prerequisites: Node.js 24, Corepack, and PostgreSQL (local or Supabase).
+
 ```bash
-pnpm install
+corepack pnpm install
 ```
 
-### 2. Environment Variables
-Copy `.env.example` to `.env` in the root folder and fill in the values:
-- `DATABASE_URL`: PostgreSQL connection string.
-- `DIRECT_URL`: PostgreSQL connection string (for Prisma migrations).
-- `AI_PROVIDER_API_KEY`: API key for the AI provider.
+Copy `.env.example` to `.env`, replace the database URLs and `BETTER_AUTH_SECRET`, then run:
 
-### 3. Database Setup
 ```bash
-cd apps/api
-pnpm db:push
-pnpm db:seed
+corepack pnpm db:generate
+corepack pnpm db:migrate
+corepack pnpm db:seed
+corepack pnpm dev
 ```
 
-### 4. Development Commands
-From the root directory:
-- `pnpm dev` - Starts both frontend and backend in parallel.
-- `pnpm build` - Builds all packages and apps.
-- `pnpm lint` - Lints all packages.
-- `pnpm typecheck` - Typechecks all packages.
+- Web: `http://localhost:5173`
+- API health: `http://localhost:3000/api/v1/health`
+- Auth API: `http://localhost:5173/api/auth/*` through the Vite same-origin proxy
 
-### 5. Testing
+## Validate a change
+
 ```bash
-pnpm test
+corepack pnpm check
 ```
+
+That command runs type checking, linting, tests, and production builds across the workspace.
+
+## Important boundaries
+
+- Add shared HTTP schemas to `packages/contracts`; do not redefine API DTOs in an app.
+- Put server-owned data in TanStack Query, app-wide browser state in Redux, form state in React Hook Form, and local UI state in React.
+- Never query Supabase directly from React.
+- Never store auth tokens in Redux or `localStorage`; Better Auth uses server sessions and HTTP-only cookies.
+- AI may rank or explain approved database records, but must not invent entities or official guidance.
+- Create Prisma migrations for schema changes and commit them.
 
 ## Documentation
-Please refer to the `docs/` folder for detailed guides:
+
 - [Architecture](docs/architecture.md)
-- [API Reference](docs/api.md)
-- [Recommendation Engine](docs/recommendation-engine.md)
-- [AI Architecture](docs/ai-architecture.md)
-- [Development](docs/development.md)
+- [Development setup](docs/development.md)
+- [API reference](docs/api.md)
+- [Team workflow](docs/team-workflow.md)
+- [AI architecture](docs/ai-architecture.md)
+- [Recommendation engine](docs/recommendation-engine.md)
+
+## Version note
+
+The supplied requirements name React Router 8, but that version is not published. This repository uses the current installable release, React Router 7.18.3, while keeping one route tree and route-level boundaries that can be upgraded later.

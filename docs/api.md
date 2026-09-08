@@ -1,21 +1,57 @@
-# API Reference
+# API reference
 
-Base URL: `/api/v1`
+The versioned product API is `/api/v1`. Better Auth owns `/api/auth/*`. During local web development, call both through the Vite origin (`http://localhost:5173`) so cookies behave like production.
 
-## Health
-- `GET /health` - Check if API is running.
+## Response shapes
 
-## Profiles
-- `POST /profile` - Create a new user profile based on onboarding data.
-- `GET /profile/:id` - Retrieve a user profile.
+Single result:
 
-## Communities
-- `GET /communities` - List available communities.
-- `GET /communities/:id` - Get specific community details.
+```json
+{ "data": {} }
+```
 
-## Resources
-- `GET /resources` - List helpful resources.
-- `GET /resources/:id` - Get specific resource.
+Collection:
 
-## AI Navigation
-- `POST /ai/navigate` - Submit a profile ID to receive an AI-generated personalized roadmap and recommended communities. Validates against deterministic candidates.
+```json
+{ "data": [], "meta": { "total": 0 } }
+```
+
+Error:
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request data",
+    "details": [],
+    "requestId": "..."
+  }
+}
+```
+
+## Routes
+
+| Method | Route | Auth | Purpose |
+|---|---|---:|---|
+| GET | `/api/v1/health` | No | Process health |
+| GET | `/api/v1/profile` | Yes | Current user's profile |
+| PUT | `/api/v1/profile` | Yes | Create or replace current user's profile |
+| GET | `/api/v1/communities` | No | Filterable community list |
+| GET | `/api/v1/communities/:id` | No | Community details |
+| GET | `/api/v1/resources` | No | Filterable resource list |
+| GET | `/api/v1/resources/:id` | No | Resource details |
+| GET | `/api/v1/opportunities` | No | Verified opportunity list |
+| GET | `/api/v1/recommendations` | Yes | Deterministic recommendations |
+| POST | `/api/v1/ai/navigate` | Yes | Grounded AI navigator with deterministic fallback |
+
+Community filters: `city`, `category`, `language`, `verified=true|false`.
+
+Resource filters: `category`.
+
+Opportunity filters: `city`, `category`.
+
+## Authentication
+
+Use the Better Auth client in `apps/web/src/lib/authClient.ts`. It exposes typed sign-up, sign-in, session, password-reset, verification, and sign-out operations. Do not handcraft token storage or call protected product routes with a browser-provided user ID.
+
+Protected product routes return `401 UNAUTHENTICATED` without a valid session and `409 PROFILE_REQUIRED` when onboarding is needed before recommendations.

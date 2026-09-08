@@ -1,8 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { scoreCommunity } from '../recommendation.service';
-import { Profile, Community } from '@prisma/client';
+/**
+ * Verifies the deterministic scoring rules that ground all AI recommendations.
+ */
 
-describe('Recommendation Service', () => {
+import { describe, it, expect } from 'vitest';
+import { scoreCommunity } from '../recommendation.service.js';
+import type { Profile, Community } from '@prisma/client';
+
+describe('scoreCommunity', () => {
   const mockProfile: Pick<Profile, 'university' | 'interests' | 'goals' | 'turkishLevel' | 'arrivalStage'> = {
     university: 'Beykoz University',
     interests: ['Software', 'AI'],
@@ -11,7 +15,7 @@ describe('Recommendation Service', () => {
     arrivalStage: 'First Week',
   };
 
-  it('should score a perfect match community correctly', () => {
+  it('scores each matching profile signal', () => {
     const perfectCommunity: Pick<Community, 'universities' | 'interests' | 'languages' | 'targetAudience' | 'newcomerFriendly'> = {
       universities: ['Beykoz University'],
       interests: ['Software'],
@@ -22,13 +26,6 @@ describe('Recommendation Service', () => {
 
     const { score, breakdown } = scoreCommunity(mockProfile, perfectCommunity);
 
-    // Expected score:
-    // University (+30)
-    // Interest match (+25)
-    // Goal match (+20)
-    // Language match (+10)
-    // Newcomer friendly (+5)
-    // Arrival stage doesn't match targetAudience here (no 'Newcomers' or 'First Week'), so no +10
     expect(score).toBe(90);
     expect(breakdown['University match']).toBe(30);
     expect(breakdown['Interest match']).toBe(25);
@@ -37,7 +34,7 @@ describe('Recommendation Service', () => {
     expect(breakdown['Newcomer-friendly']).toBe(5);
   });
 
-  it('should add arrival stage score if target audience matches', () => {
+  it('adds an arrival-stage score for newcomer communities', () => {
     const friendlyCommunity: Pick<Community, 'universities' | 'interests' | 'languages' | 'targetAudience' | 'newcomerFriendly'> = {
       universities: ['Any'],
       interests: [],
@@ -48,7 +45,6 @@ describe('Recommendation Service', () => {
 
     const { score, breakdown } = scoreCommunity(mockProfile, friendlyCommunity);
 
-    // Score: University (+30) [matches 'Any'], Arrival Stage (+10), Newcomer friendly (+5)
     expect(score).toBe(45);
     expect(breakdown['Arrival-stage match']).toBe(10);
   });

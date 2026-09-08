@@ -6,7 +6,7 @@ async function main() {
   console.log('Seeding the database...');
 
   // Example community
-  const community1 = await prisma.community.upsert({
+  await prisma.community.upsert({
     where: { id: '00000000-0000-0000-0000-000000000001' },
     update: {},
     create: {
@@ -27,7 +27,7 @@ async function main() {
   });
 
   // Example resource
-  const resource1 = await prisma.resource.upsert({
+  await prisma.resource.upsert({
     where: { id: '00000000-0000-0000-0000-000000000002' },
     update: {},
     create: {
@@ -38,6 +38,20 @@ async function main() {
       url: 'https://example.com/istanbulkart',
       source: 'IBB',
       lastReviewed: new Date(),
+    },
+  });
+
+  await prisma.opportunity.upsert({
+    where: { id: '00000000-0000-0000-0000-000000000003' },
+    update: {},
+    create: {
+      id: '00000000-0000-0000-0000-000000000003',
+      title: 'International Student Welcome Meetup',
+      description: 'A verified welcome event for students who recently arrived in Istanbul.',
+      category: 'Community',
+      city: 'Istanbul',
+      url: 'https://example.com/welcome-meetup',
+      verified: true,
     },
   });
 

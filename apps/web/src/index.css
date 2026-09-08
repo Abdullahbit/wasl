@@ -1,3 +1,7 @@
+/**
+ * Defines global Tailwind layers and accessible browser defaults.
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,5 +9,9 @@
 @layer base {
   body {
     @apply bg-gray-50 text-gray-900;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-blue-600 ring-offset-2;
   }
 }

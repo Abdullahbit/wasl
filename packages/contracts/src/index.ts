@@ -1,5 +1,10 @@
-export * from './profile';
-export * from './community';
-export * from './resource';
-export * from './recommendation';
-export * from './common';
+/**
+ * Publishes the runtime-validated API contracts shared by the web and API apps.
+ */
+
+export * from './profile.js';
+export * from './community.js';
+export * from './resource.js';
+export * from './recommendation.js';
+export * from './opportunity.js';
+export * from './common.js';

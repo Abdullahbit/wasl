@@ -1,39 +1,54 @@
-import { Router, Request, Response, NextFunction } from 'express';
+/**
+ * Exposes read-only, filterable access to approved community records.
+ */
+
+import { Router, Request, Response } from 'express';
 import { prisma } from '../../db/prisma.js';
+import { CommunityFiltersSchema, IdentifierParametersSchema } from '@wasl/contracts';
+import { validateParams, validateQuery } from '../../middleware/validate.js';
+import { asyncRoute } from '../../shared/utilities/asyncRoute.js';
+import { ApplicationError } from '../../shared/errors/ApplicationError.js';
+import { serializeCommunity } from './community.serializer.js';
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
+router.get(
+  '/',
+  validateQuery(CommunityFiltersSchema),
+  asyncRoute(async (request: Request, response: Response) => {
+    const { city, category, language, verified } = CommunityFiltersSchema.parse(request.query);
     const communities = await prisma.community.findMany({
+      where: {
+        ...(city ? { location: { equals: city, mode: 'insensitive' } } : {}),
+        ...(category ? { category: { equals: category, mode: 'insensitive' } } : {}),
+        ...(language ? { languages: { has: language } } : {}),
+        ...(verified ? { verified: verified === 'true' } : {}),
+      },
       orderBy: { createdAt: 'desc' },
     });
-    
-    res.json({
-      data: communities,
-      total: communities.length,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
 
-router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.params;
-    
+    response.json({
+      data: communities.map(serializeCommunity),
+      meta: { total: communities.length },
+    });
+  }),
+);
+
+router.get(
+  '/:id',
+  validateParams(IdentifierParametersSchema),
+  asyncRoute(async (request: Request, response: Response) => {
+    const { id } = IdentifierParametersSchema.parse(request.params);
     const community = await prisma.community.findUnique({
       where: { id },
     });
-    
+
     if (!community) {
-      return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Community not found' } });
+      throw new ApplicationError(404, 'NOT_FOUND', 'Community not found.');
     }
-    
-    res.json(community);
-  } catch (error) {
-    next(error);
-  }
-});
+
+    response.json({ data: serializeCommunity(community) });
+  }),
+);
 
 export default router;

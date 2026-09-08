@@ -1,41 +1,50 @@
-import { Router, Request, Response, NextFunction } from 'express';
+/**
+ * Allows an authenticated user to create, update, and read their own profile.
+ */
+
+import { Router, Request, Response } from 'express';
 import { prisma } from '../../db/prisma.js';
 import { validateRequest } from '../../middleware/validate.js';
 import { ProfileInputSchema } from '@wasl/contracts';
+import { requireAuthenticatedUser } from '../auth/auth.middleware.js';
+import { asyncRoute } from '../../shared/utilities/asyncRoute.js';
+import { ApplicationError } from '../../shared/errors/ApplicationError.js';
+import { serializeProfile } from './profile.serializer.js';
 
 const router = Router();
 
-router.post('/', validateRequest(ProfileInputSchema), async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const profileData = req.body;
-    
-    // MVP: Create a new profile every time since there's no auth
-    const profile = await prisma.profile.create({
-      data: profileData,
-    });
-    
-    res.status(201).json(profile);
-  } catch (error) {
-    next(error);
-  }
-});
+router.use(requireAuthenticatedUser);
 
-router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.params;
-    
-    const profile = await prisma.profile.findUnique({
-      where: { id },
+router.put(
+  '/',
+  validateRequest(ProfileInputSchema),
+  asyncRoute(async (request: Request, response: Response) => {
+    const profileData = ProfileInputSchema.parse(request.body);
+    const userId = response.locals.session.user.id as string;
+    const profile = await prisma.profile.upsert({
+      where: { userId },
+      update: profileData,
+      create: { ...profileData, userId },
     });
-    
+
+    response.json({ data: serializeProfile(profile) });
+  }),
+);
+
+router.get(
+  '/',
+  asyncRoute(async (_request: Request, response: Response) => {
+    const userId = response.locals.session.user.id as string;
+    const profile = await prisma.profile.findUnique({
+      where: { userId },
+    });
+
     if (!profile) {
-      return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Profile not found' } });
+      throw new ApplicationError(404, 'NOT_FOUND', 'Profile not found.');
     }
-    
-    res.json(profile);
-  } catch (error) {
-    next(error);
-  }
-});
+
+    response.json({ data: serializeProfile(profile) });
+  }),
+);
 
 export default router;
