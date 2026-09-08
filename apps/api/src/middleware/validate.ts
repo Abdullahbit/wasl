@@ -14,7 +14,17 @@ export function validate<T extends z.ZodTypeAny>(
       next(new ValidationError('Validation failed', result.error.flatten()))
       return
     }
-    req[target] = result.data
+    if (target === 'query') {
+      // Express 5's req.query is a getter with no setter — mutate in place instead of reassigning.
+      Object.defineProperty(req, 'query', {
+        value: result.data,
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      })
+    } else {
+      req[target] = result.data
+    }
     next()
   }
 }
