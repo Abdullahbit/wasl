@@ -1,0 +1,176 @@
+/**
+ * Applies the Istanbul Bridge design theme and shadcn/ui semantic tokens.
+ */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.875rem;
+  --background: oklch(0.978 0.006 95);
+  --foreground: oklch(0.245 0.018 205);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.245 0.018 205);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.245 0.018 205);
+  --primary: oklch(0.49 0.083 183);
+  --primary-foreground: oklch(0.985 0.005 180);
+  --secondary: oklch(0.955 0.009 175);
+  --secondary-foreground: oklch(0.33 0.03 183);
+  --muted: oklch(0.955 0.008 175);
+  --muted-foreground: oklch(0.53 0.023 205);
+  --accent: oklch(0.69 0.145 39);
+  --accent-foreground: oklch(0.995 0.003 40);
+  --destructive: oklch(0.57 0.17 22);
+  --destructive-foreground: oklch(0.985 0.005 20);
+  --border: oklch(0.90 0.011 175);
+  --input: oklch(0.90 0.011 175);
+  --ring: oklch(0.57 0.075 183);
+  --chart-1: oklch(0.49 0.083 183);
+  --chart-2: oklch(0.69 0.145 39);
+  --chart-3: oklch(0.60 0.12 151);
+  --chart-4: oklch(0.61 0.16 256);
+  --chart-5: oklch(0.58 0.14 300);
+  --sidebar: oklch(0.992 0.003 95);
+  --sidebar-foreground: oklch(0.245 0.018 205);
+  --sidebar-primary: oklch(0.49 0.083 183);
+  --sidebar-primary-foreground: oklch(0.985 0.005 180);
+  --sidebar-accent: oklch(0.945 0.019 183);
+  --sidebar-accent-foreground: oklch(0.39 0.053 183);
+  --sidebar-border: oklch(0.90 0.011 175);
+  --sidebar-ring: oklch(0.57 0.075 183);
+  --success: oklch(0.56 0.12 151);
+  --success-foreground: oklch(0.985 0.01 151);
+  --success-muted: oklch(0.955 0.035 151);
+  --warning: oklch(0.62 0.135 76);
+  --warning-foreground: oklch(0.985 0.008 80);
+  --warning-muted: oklch(0.965 0.04 86);
+  --info: oklch(0.55 0.16 256);
+  --info-foreground: oklch(0.985 0.008 256);
+  --info-muted: oklch(0.955 0.03 256);
+  --navigator: oklch(0.58 0.14 300);
+  --navigator-foreground: oklch(0.985 0.008 300);
+  --navigator-muted: oklch(0.955 0.025 300);
+}
+
+.dark {
+  --background: oklch(0.175 0.012 183);
+  --foreground: oklch(0.96 0.009 175);
+  --card: oklch(0.205 0.014 183);
+  --card-foreground: oklch(0.96 0.009 175);
+  --popover: oklch(0.205 0.014 183);
+  --popover-foreground: oklch(0.96 0.009 175);
+  --primary: oklch(0.70 0.09 183);
+  --primary-foreground: oklch(0.19 0.018 183);
+  --secondary: oklch(0.245 0.018 183);
+  --secondary-foreground: oklch(0.92 0.012 175);
+  --muted: oklch(0.245 0.018 183);
+  --muted-foreground: oklch(0.72 0.025 175);
+  --accent: oklch(0.74 0.13 39);
+  --accent-foreground: oklch(0.19 0.015 39);
+  --destructive: oklch(0.68 0.15 22);
+  --destructive-foreground: oklch(0.98 0.008 22);
+  --border: oklch(0.30 0.018 183);
+  --input: oklch(0.30 0.018 183);
+  --ring: oklch(0.70 0.09 183);
+  --sidebar: oklch(0.19 0.013 183);
+  --sidebar-foreground: oklch(0.96 0.009 175);
+  --sidebar-primary: oklch(0.70 0.09 183);
+  --sidebar-primary-foreground: oklch(0.19 0.018 183);
+  --sidebar-accent: oklch(0.255 0.027 183);
+  --sidebar-accent-foreground: oklch(0.91 0.014 175);
+  --sidebar-border: oklch(0.30 0.018 183);
+  --sidebar-ring: oklch(0.70 0.09 183);
+  --success: oklch(0.72 0.11 151);
+  --success-foreground: oklch(0.19 0.012 151);
+  --success-muted: oklch(0.255 0.035 151);
+  --warning: oklch(0.76 0.12 76);
+  --warning-foreground: oklch(0.20 0.014 76);
+  --warning-muted: oklch(0.27 0.035 76);
+  --info: oklch(0.72 0.12 256);
+  --info-foreground: oklch(0.19 0.012 256);
+  --info-muted: oklch(0.255 0.03 256);
+  --navigator: oklch(0.73 0.11 300);
+  --navigator-foreground: oklch(0.20 0.014 300);
+  --navigator-muted: oklch(0.26 0.03 300);
+}
+
+@theme inline {
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-muted: var(--success-muted);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-muted: var(--warning-muted);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-muted: var(--info-muted);
+  --color-navigator: var(--navigator);
+  --color-navigator-foreground: var(--navigator-foreground);
+  --color-navigator-muted: var(--navigator-muted);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 14px);
+  --shadow-soft: 0 1px 2px rgb(16 24 24 / 0.05);
+  --shadow-card: 0 10px 30px rgb(16 24 24 / 0.07);
+  --shadow-floating: 0 24px 70px rgb(16 24 24 / 0.11);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply bg-background;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+}

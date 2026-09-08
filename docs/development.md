@@ -59,7 +59,7 @@ corepack pnpm db:seed      # Reproducible demo data
 
 ## Changing the database
 
-Edit `apps/api/prisma/schema.prisma`, then run:
+Edit `apps/server/prisma/schema.prisma`, then run:
 
 ```bash
 corepack pnpm db:migrate

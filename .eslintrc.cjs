@@ -22,7 +22,7 @@ module.exports = {
   ignorePatterns: ['**/dist/**', '**/node_modules/**'],
   overrides: [
     {
-      files: ['apps/web/**/*.{ts,tsx}'],
+      files: ['apps/client/**/*.{ts,tsx}'],
       plugins: ['react-hooks', 'react-refresh'],
       rules: {
         ...require('eslint-plugin-react-hooks').configs.recommended.rules,

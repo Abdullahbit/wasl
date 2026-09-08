@@ -8,8 +8,8 @@ This repository is a production-shaped, hackathon-simple TypeScript monorepo. Th
 
 ```text
 apps/
-  web/                 React, Vite, routes, client state, feature UI
-  api/                 Express modular monolith, auth, Prisma, AI boundary
+  client/              React, Vite, routes, client state, feature UI
+  server/              Express modular monolith, auth, Prisma, AI boundary
 packages/
   contracts/           Shared Zod request/response contracts and DTO types
   config/              Shared strict TypeScript settings

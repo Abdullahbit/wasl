@@ -52,6 +52,6 @@ Opportunity filters: `city`, `category`.
 
 ## Authentication
 
-Use the Better Auth client in `apps/web/src/lib/authClient.ts`. It exposes typed sign-up, sign-in, session, password-reset, verification, and sign-out operations. Do not handcraft token storage or call protected product routes with a browser-provided user ID.
+Use the Better Auth client in `apps/client/src/lib/authClient.ts`. It exposes typed sign-up, sign-in, session, password-reset, verification, and sign-out operations. Do not handcraft token storage or call protected product routes with a browser-provided user ID.
 
 Protected product routes return `401 UNAUTHENTICATED` without a valid session and `409 PROFILE_REQUIRED` when onboarding is needed before recommendations.

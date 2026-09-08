@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import type { InputHTMLAttributes } from 'react';
 import type { z } from 'zod';
 import { profileQueryKey, saveProfile } from '../features/profiles/profileApi';
+import { Button } from '../components/ui/button';
 
 const arrivalStages = ProfileInputSchema.shape.arrivalStage.options;
 const turkishLevels = ProfileInputSchema.shape.turkishLevel.options;
@@ -39,7 +40,7 @@ export function OnboardingPage() {
     <section className="max-w-2xl">
       <title>Onboarding | WASL</title>
       <h1 className="text-3xl font-bold">Tell us where you are starting</h1>
-      <p className="mt-2 text-gray-600">This profile is used to rank real, verified options.</p>
+      <p className="mt-2 text-muted-foreground">This profile is used to rank real, verified options.</p>
       <form
         className="mt-8 grid gap-5"
         onSubmit={form.handleSubmit((profileInput) => profileMutation.mutate(profileInput))}
@@ -49,25 +50,25 @@ export function OnboardingPage() {
         <TextField label="Specialization" error={form.formState.errors.specialization?.message} {...form.register('specialization')} />
         <label className="grid gap-1 font-medium">
           Arrival stage
-          <select className="rounded-md border px-3 py-2" {...form.register('arrivalStage')}>
+          <select className="rounded-md border bg-background px-3 py-2" {...form.register('arrivalStage')}>
             {arrivalStages.map((stage) => <option key={stage}>{stage}</option>)}
           </select>
         </label>
         <label className="grid gap-1 font-medium">
           Turkish level
-          <select className="rounded-md border px-3 py-2" {...form.register('turkishLevel')}>
+          <select className="rounded-md border bg-background px-3 py-2" {...form.register('turkishLevel')}>
             {turkishLevels.map((level) => <option key={level}>{level}</option>)}
           </select>
         </label>
         {profileMutation.isError ? <p role="alert" className="text-red-700">{profileMutation.error.message}</p> : null}
         {profileMutation.isSuccess ? <p role="status" className="text-green-700">Your profile is ready.</p> : null}
-        <button
+        <Button
           type="submit"
           disabled={profileMutation.isPending}
-          className="rounded-md bg-blue-700 px-4 py-3 font-semibold text-white disabled:opacity-60"
+          size="lg"
         >
           {profileMutation.isPending ? 'Saving…' : 'Save profile'}
-        </button>
+        </Button>
       </form>
     </section>
   );
@@ -84,7 +85,7 @@ function TextField({ label, error, id, ...inputProps }: TextFieldProps) {
   return (
     <label className="grid gap-1 font-medium" htmlFor={inputId}>
       {label}
-      <input id={inputId} className="rounded-md border px-3 py-2" {...inputProps} />
+      <input id={inputId} className="rounded-md border bg-background px-3 py-2" {...inputProps} />
       {error ? <span className="text-sm text-red-700">{error}</span> : null}
     </label>
   );

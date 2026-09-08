@@ -20,11 +20,11 @@ Local Vite development proxies `/api/*` to Express. Production should expose the
 
 | Area | Owns | Must not own |
 |---|---|---|
-| `apps/web/src/pages` | Route-level composition and metadata | Database calls or business rules |
-| `apps/web/src/features` | Feature UI, query keys, validated API calls | Server authorization |
-| `apps/web/src/store` | Long-lived client-owned state | API response copies or credentials |
-| `apps/api/src/modules` | Feature routes and application workflows | Cross-feature dumping-ground utilities |
-| `apps/api/src/db` | Shared Prisma client | Per-request Prisma instances |
+| `apps/client/src/pages` | Route-level composition and metadata | Database calls or business rules |
+| `apps/client/src/features` | Feature UI, query keys, validated API calls | Server authorization |
+| `apps/client/src/store` | Long-lived client-owned state | API response copies or credentials |
+| `apps/server/src/modules` | Feature routes and application workflows | Cross-feature dumping-ground utilities |
+| `apps/server/src/db` | Shared Prisma client | Per-request Prisma instances |
 | `packages/contracts` | External Zod contracts and DTO types | Prisma or UI-specific types |
 
 ## Server request flow
@@ -68,7 +68,7 @@ Better Auth is mounted before `express.json()` because it consumes its own reque
 
 The deterministic ranking runs first over verified database communities. Only top approved candidates may be sent to an AI adapter. The returned object is parsed with Zod, and steps referencing unknown community IDs are removed. If the provider is missing or fails, the API returns deterministic recommendations with a warning.
 
-The provider-neutral adapter intentionally fails closed until the team selects a provider. Connect it in `apps/api/src/modules/ai/ai.service.ts`; do not put provider code or keys in React.
+The provider-neutral adapter intentionally fails closed until the team selects a provider. Connect it in `apps/server/src/modules/ai/ai.service.ts`; do not put provider code or keys in React.
 
 ## Deliberate MVP exclusions
 

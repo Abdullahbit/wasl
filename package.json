@@ -12,10 +12,10 @@
     "test": "corepack pnpm -r --if-present run test",
     "typecheck": "corepack pnpm -r run typecheck",
     "check": "corepack pnpm typecheck && corepack pnpm lint && corepack pnpm test && corepack pnpm build",
-    "db:generate": "corepack pnpm --filter @wasl/api db:generate",
-    "db:migrate": "corepack pnpm --filter @wasl/api db:migrate",
-    "db:deploy": "corepack pnpm --filter @wasl/api db:deploy",
-    "db:seed": "corepack pnpm --filter @wasl/api db:seed"
+    "db:generate": "corepack pnpm --filter @wasl/server db:generate",
+    "db:migrate": "corepack pnpm --filter @wasl/server db:migrate",
+    "db:deploy": "corepack pnpm --filter @wasl/server db:deploy",
+    "db:seed": "corepack pnpm --filter @wasl/server db:seed"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.18.0",

@@ -6,7 +6,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { AppProviders } from './app/AppProviders';
 import { AppRouter } from './router';
-import './index.css';
+import './styles/globals.css';
 
 const rootElement = document.getElementById('root');
 

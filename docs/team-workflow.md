@@ -6,12 +6,12 @@ These areas can be developed in parallel with limited overlap:
 
 | Workstream | Primary paths |
 |---|---|
-| Authentication UI and flows | `apps/web/src/features/auth`, `apps/api/src/modules/auth` |
-| Onboarding/profile | `apps/web/src/pages/OnboardingPage.tsx`, `apps/web/src/features/profiles`, `apps/api/src/modules/profiles` |
-| Community discovery | `apps/web/src/features/communities`, `apps/api/src/modules/communities` |
+| Authentication UI and flows | `apps/client/src/features/auth`, `apps/server/src/modules/auth` |
+| Onboarding/profile | `apps/client/src/pages/OnboardingPage.tsx`, `apps/client/src/features/profiles`, `apps/server/src/modules/profiles` |
+| Community discovery | `apps/client/src/features/communities`, `apps/server/src/modules/communities` |
 | Resources/opportunities | matching modules in both apps, shared contracts |
-| Recommendations/AI | `apps/api/src/modules/recommendations`, `apps/api/src/modules/ai` |
-| Design system | `apps/web/src/components`, `apps/web/src/index.css` |
+| Recommendations/AI | `apps/server/src/modules/recommendations`, `apps/server/src/modules/ai` |
+| Design system | `apps/client/src/components`, `apps/client/src/index.css` |
 
 Coordinate any edit to `packages/contracts`, `schema.prisma`, or the root package files because those are shared integration points.
 
