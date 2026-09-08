@@ -20,6 +20,7 @@ export class ApiError extends Error {
 interface ApiRequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
+  headers?: Record<string, string>;
   signal?: AbortSignal;
 }
 
@@ -28,15 +29,34 @@ export async function apiRequest<ResponseData>(
   responseSchema: ZodType<ResponseData>,
   options: ApiRequestOptions = {},
 ): Promise<ResponseData> {
+  const headers: Record<string, string> = {
+    ...(options.headers ?? {}),
+  };
+
+  if (options.body !== undefined) {
+    headers['content-type'] = 'application/json';
+  }
+
   const response = await fetch(path, {
     method: options.method ?? 'GET',
     credentials: 'include',
-    ...(options.body === undefined
-      ? {}
-      : { headers: { 'content-type': 'application/json' }, body: JSON.stringify(options.body) }),
+    headers,
+    ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
     ...(options.signal ? { signal: options.signal } : {}),
   });
-  const responseBody: unknown = await response.json();
+  let responseBody: unknown = null;
+  if (typeof response.text === 'function') {
+    const text = await response.text();
+    if (text.trim()) {
+      try {
+        responseBody = JSON.parse(text);
+      } catch {
+        throw new ApiError('The server returned an unparseable response.', 'INVALID_JSON', response.status);
+      }
+    }
+  } else if (typeof response.json === 'function') {
+    responseBody = await response.json();
+  }
 
   if (!response.ok) {
     const parsedError = ErrorResponseSchema.safeParse(responseBody);
@@ -51,7 +71,13 @@ export async function apiRequest<ResponseData>(
       );
     }
 
-    throw new ApiError('The server returned an unexpected error.', 'UNEXPECTED_RESPONSE', response.status);
+    throw new ApiError(
+      response.status === 504 || response.status === 502
+        ? 'Could not connect to the backend server.'
+        : 'The server returned an unexpected error.',
+      'UNEXPECTED_RESPONSE',
+      response.status,
+    );
   }
 
   return responseSchema.parse(responseBody);

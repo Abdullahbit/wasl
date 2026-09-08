@@ -7,6 +7,7 @@ import { AppShell } from '../layouts/AppShell';
 import { CommunitiesPage } from '../pages/CommunitiesPage';
 import { HomePage } from '../pages/HomePage';
 import { OnboardingPage } from '../pages/OnboardingPage';
+import { ProfilePage } from '../pages/ProfilePage';
 import { PlaceholderPage } from '../pages/PlaceholderPage';
 
 const router = createBrowserRouter([
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'onboarding', element: <OnboardingPage /> },
+      { path: 'profile', element: <ProfilePage /> },
       {
         path: 'plan',
         element: <PlaceholderPage title="Your roadmap" description="AI-grounded next steps live here." />,
