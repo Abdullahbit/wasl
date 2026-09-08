@@ -36,7 +36,17 @@ function serializeCommunity(
   }
 }
 
+// Fast in-memory cache to eliminate round-trip latency to remote pooler
+const cache = new Map<string, { data: any; expiry: number }>()
+const CACHE_TTL_MS = 60_000 // 60 seconds
+
 export async function getCommunities(filters: CommunityFilters) {
+  const cacheKey = JSON.stringify(filters)
+  const cached = cache.get(cacheKey)
+  if (cached && cached.expiry > Date.now()) {
+    return cached.data
+  }
+
   const { items, total } = await communityRepo.list(filters)
   const records = await communityRepo.findVerificationRecords(items.map((c) => c.id))
   const statusByCommunityId = new Map(records.map((r) => [r.entityId, r.status]))
@@ -45,7 +55,7 @@ export async function getCommunities(filters: CommunityFilters) {
     serializeCommunity(item, statusByCommunityId.get(item.id) ?? null),
   )
 
-  return {
+  const result = {
     data,
     meta: {
       page: filters.page,
@@ -54,15 +64,27 @@ export async function getCommunities(filters: CommunityFilters) {
       totalPages: Math.ceil(total / filters.limit),
     },
   }
+
+  cache.set(cacheKey, { data: result, expiry: Date.now() + CACHE_TTL_MS })
+  return result
 }
 
 export async function getCommunity(id: string) {
+  const cacheKey = `comm_${id}`
+  const cached = cache.get(cacheKey)
+  if (cached && cached.expiry > Date.now()) {
+    return cached.data
+  }
+
   const community = await communityRepo.findById(id)
   if (!community) {
     throw new NotFoundError('Community')
   }
   const record = await communityRepo.findVerificationRecord(community.id)
-  return serializeCommunity(community, record?.status ?? null)
+  const result = serializeCommunity(community, record?.status ?? null)
+
+  cache.set(cacheKey, { data: result, expiry: Date.now() + CACHE_TTL_MS })
+  return result
 }
 
 export async function getCommunityBySlug(slug: string) {

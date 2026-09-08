@@ -12,6 +12,7 @@ export const auth = betterAuth({
     provider: 'postgresql',
   }),
   baseURL: env.BETTER_AUTH_URL,
+  trustedOrigins: [env.CORS_ORIGIN ?? 'http://localhost:5173', 'http://localhost:3000'],
   secret: env.BETTER_AUTH_SECRET,
   emailAndPassword: {
     enabled: true,
