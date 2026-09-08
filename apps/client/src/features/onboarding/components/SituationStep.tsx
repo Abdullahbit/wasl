@@ -4,10 +4,11 @@
  * This step groups location-related questions to keep the flow short.
  */
 
-import { useId } from 'react';
+import { useId, useMemo } from 'react';
 import { SearchableSelect } from './SearchableSelect';
 import { SingleSelectCards } from './SingleSelectCards';
-import { arrivalStageOptions, cityOptions, universityOptions } from '../onboardingConstants';
+import { cityOptions, universityOptions } from '../onboardingConstants';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface SituationStepProps {
   city: string;
@@ -37,21 +38,32 @@ export function SituationStep({
   disabled,
 }: SituationStepProps) {
   const headingId = useId();
+  const { t } = useTranslation();
+
+  const translatedArrivalOptions = useMemo(
+    () => [
+      { value: 'Preparing', label: t('onboarding.fields.arrivalStage.options.preparing'), description: t('onboarding.fields.arrivalStage.options.preparingDesc') },
+      { value: 'First Week', label: t('onboarding.fields.arrivalStage.options.firstWeek'), description: t('onboarding.fields.arrivalStage.options.firstWeekDesc') },
+      { value: 'First Month', label: t('onboarding.fields.arrivalStage.options.firstMonth'), description: t('onboarding.fields.arrivalStage.options.firstMonthDesc') },
+      { value: 'Settled', label: t('onboarding.fields.arrivalStage.options.settled'), description: t('onboarding.fields.arrivalStage.options.settledDesc') },
+    ],
+    [t],
+  );
 
   return (
     <section aria-labelledby={headingId} className="grid gap-6">
       <header className="space-y-1">
         <h2 id={headingId} className="text-xl font-semibold leading-none tracking-tight">
-          Your current situation
+          {t('onboarding.steps.situation.title')}
         </h2>
-        <p className="text-sm text-muted-foreground">Tell us where you are based and how long you have been in Türkiye.</p>
+        <p className="text-sm text-muted-foreground">{t('onboarding.steps.situation.description')}</p>
       </header>
 
       <SearchableSelect
         id="onboarding-city"
-        label="City"
-        placeholder="Start typing e.g. Istanbul"
-        description="We prioritize Istanbul but you can choose any supported city."
+        label={t('onboarding.fields.city.label')}
+        placeholder={t('onboarding.fields.city.placeholder')}
+        description={t('onboarding.fields.city.description')}
         value={city}
         onChange={onCityChange}
         onBlur={() => onBlurField('city')}
@@ -64,9 +76,9 @@ export function SituationStep({
 
       <SearchableSelect
         id="onboarding-university"
-        label="University"
-        placeholder="Search universities e.g. Beykoz University"
-        description="Start typing to filter. Your exact entry is saved even if not listed."
+        label={t('onboarding.fields.university.label')}
+        placeholder={t('onboarding.fields.university.placeholder')}
+        description={t('onboarding.fields.university.description')}
         value={university}
         onChange={onUniversityChange}
         onBlur={() => onBlurField('university')}
@@ -78,9 +90,9 @@ export function SituationStep({
       />
 
       <SingleSelectCards
-        label="Arrival stage"
-        description="How long have you been in Türkiye?"
-        options={arrivalStageOptions}
+        label={t('onboarding.fields.arrivalStage.label')}
+        description={t('onboarding.fields.arrivalStage.description')}
+        options={translatedArrivalOptions}
         value={arrivalStage}
         onChange={onArrivalStageChange}
         error={errors.arrivalStage}

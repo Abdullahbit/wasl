@@ -11,6 +11,7 @@ import { useEffect, useId, useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 import { DROPDOWN_CLOSE_DELAY_MS, MAX_VISIBLE_SUGGESTIONS } from '../onboardingConstants';
 
 interface SearchableSelectProps {
@@ -42,6 +43,7 @@ export function SearchableSelect({
   disabled,
   autoComplete,
 }: SearchableSelectProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState(value);
   const generatedInputId = useId();
@@ -138,7 +140,7 @@ export function SearchableSelect({
                         handleSelectOption(option);
                       }}
                       className={cn(
-                        'flex w-full rounded-sm px-2 py-2.5 text-left text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none',
+                        'flex w-full rounded-sm px-2 py-2.5 text-start text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none',
                         option === value && 'bg-secondary font-medium',
                       )}
                     >
@@ -148,7 +150,7 @@ export function SearchableSelect({
                 ))}
               </ul>
             ) : (
-              <p className="px-3 py-2 text-sm text-muted-foreground">No matches. You can keep your custom entry.</p>
+              <p className="px-3 py-2 text-sm text-muted-foreground">{t('onboarding.messages.noMatches')}</p>
             )}
           </div>
         ) : null}

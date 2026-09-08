@@ -1136,7 +1136,26 @@ Complexity is acceptable when the problem genuinely requires it, but the code an
 
 ---
 
-# 36. Rule Priority
+# 37. Arabic and RTL Support Are Mandatory
+
+Every user-facing surface must support both English (LTR) and Arabic (RTL) from day one. This is not optional copy - it affects layout, validation, and testing.
+
+The agent MUST:
+
+- Externalize every user-visible string through the project's i18n layer. Never hardcode English or Arabic copy directly in components. Use translation keys with `en` and `ar` bundles.
+- Keep translation files as the single source of truth for copy. Add or update keys in `src/lib/i18n/translations.ts` (or the configured locale files) and reuse shared keys before creating onboarding-specific ones.
+- Use logical CSS properties and direction-aware utilities. Prefer `text-start`/`text-end`, `ms-*`/`me-*`, `ps-*`/`pe-*`, `inset-inline-start`/`inset-inline-end` over `text-left`/`text-right`, `ml`/`mr`, `left`/`right`. Do not hardcode directional spacing, alignment, or positioning.
+- Set `html lang` and `dir` from the active locale (`en` → `ltr`, `ar` → `rtl`) and ensure the entire app - navigation, forms, progress, cards, selects, error messages - reflows correctly in both directions.
+- Mirror directional icons and controls. Arrows, chevrons, and progress flow must point with the reading direction (`→` in LTR becomes `←` in RTL or use logical icons). Do not hardcode `left`/`right` behavior for icons or navigation controls.
+- Keep validation and API messages translatable. Zod errors, empty-state copy, and server error fallbacks must use translated strings, not hardcoded English.
+- Provide a visible language switcher and persist the chosen locale (e.g., `localStorage`) without storing secrets. Default to English on first visit if no preference is saved.
+- Verify every change in both directions: desktop, tablet, mobile, keyboard navigation, and the Ahmed demo persona (Arabic + English). `pnpm test` must include an RTL rendering check where relevant.
+
+If a design-system component does not yet handle RTL correctly, document the gap instead of building a second system inside onboarding. Fix the gap with logical properties, not with duplicated `ltr`/`rtl` branches.
+
+---
+
+# 38. Rule Priority
 
 When making decisions, follow this priority:
 

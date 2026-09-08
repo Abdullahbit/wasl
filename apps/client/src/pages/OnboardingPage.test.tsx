@@ -11,6 +11,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProfileInputSchema } from '@wasl/contracts';
 import { OnboardingPage } from './OnboardingPage';
 import { saveProfile } from '@/features/profiles/profileApi';
+import { I18nProvider } from '@/lib/i18n/I18nProvider';
 
 vi.mock('@/features/profiles/profileApi', () => ({
   profileQueryKey: ['profile'],
@@ -41,12 +42,38 @@ function createTestQueryClient() {
 function renderOnboardingPage() {
   const queryClient = createTestQueryClient();
 
+  window.localStorage.clear();
+  window.localStorage.setItem('wasl-locale', 'en');
+  document.documentElement.lang = 'en';
+  document.documentElement.dir = 'ltr';
+
   return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/onboarding']}>
-        <OnboardingPage />
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <I18nProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/onboarding']}>
+          <OnboardingPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </I18nProvider>,
+  );
+}
+
+function renderOnboardingPageInArabic() {
+  const queryClient = createTestQueryClient();
+
+  window.localStorage.clear();
+  window.localStorage.setItem('wasl-locale', 'ar');
+  document.documentElement.lang = 'ar';
+  document.documentElement.dir = 'rtl';
+
+  return render(
+    <I18nProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/onboarding']}>
+          <OnboardingPage />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </I18nProvider>,
   );
 }
 
@@ -522,5 +549,18 @@ describe('OnboardingPage', () => {
     await user.click(screen.getByRole('button', { name: /Edit current situation/i }));
     expect(await screen.findByRole('heading', { name: 'Your current situation' })).toBeInTheDocument();
     expect(getCityInput()).toHaveValue('Ankara');
+  });
+
+  it('renders in Arabic RTL correctly and switches language', async () => {
+    renderOnboardingPageInArabic();
+
+    expect(document.documentElement.dir).toBe('rtl');
+    expect(document.documentElement.lang).toBe('ar');
+    expect(await screen.findByRole('heading', { name: 'أنشئ ملفك في وصل' })).toBeInTheDocument();
+    expect(screen.getByText('الخطوة 1 من 5')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'وضعك الحالي' })).toBeInTheDocument();
+
+    // Verify RTL separator uses logical arrow (←) not LTR (→)
+    expect(screen.getByText(/←/)).toBeInTheDocument();
   });
 });

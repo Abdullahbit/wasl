@@ -8,6 +8,22 @@ import { CommunitiesPage } from '../pages/CommunitiesPage';
 import { HomePage } from '../pages/HomePage';
 import { OnboardingPage } from '../pages/OnboardingPage';
 import { PlaceholderPage } from '../pages/PlaceholderPage';
+import { useTranslation } from '../lib/i18n/useTranslation';
+
+function PlanPlaceholder() {
+  const { t } = useTranslation();
+  return <PlaceholderPage title={t('onboarding.placeholders.planTitle')} description={t('onboarding.placeholders.planDescription')} />;
+}
+
+function CommunityDetailsPlaceholder() {
+  const { t } = useTranslation();
+  return <PlaceholderPage title={t('onboarding.placeholders.communityDetailsTitle')} description={t('onboarding.placeholders.communityDetailsDescription')} />;
+}
+
+function ResourcesPlaceholder() {
+  const { t } = useTranslation();
+  return <PlaceholderPage title={t('onboarding.placeholders.resourcesTitle')} description={t('onboarding.placeholders.resourcesDescription')} />;
+}
 
 const router = createBrowserRouter([
   {
@@ -16,19 +32,10 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'onboarding', element: <OnboardingPage /> },
-      {
-        path: 'plan',
-        element: <PlaceholderPage title="Your roadmap" description="AI-grounded next steps live here." />,
-      },
+      { path: 'plan', element: <PlanPlaceholder /> },
       { path: 'communities', element: <CommunitiesPage /> },
-      {
-        path: 'communities/:id',
-        element: <PlaceholderPage title="Community details" description="Community details live here." />,
-      },
-      {
-        path: 'resources',
-        element: <PlaceholderPage title="Resources" description="Curated newcomer guides live here." />,
-      },
+      { path: 'communities/:id', element: <CommunityDetailsPlaceholder /> },
+      { path: 'resources', element: <ResourcesPlaceholder /> },
     ],
   },
 ]);

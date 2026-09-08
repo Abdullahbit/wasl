@@ -64,7 +64,7 @@ export function SingleSelectCards({
             <label
               key={option.value}
               className={cn(
-                'relative flex cursor-pointer flex-col gap-1 rounded-lg border bg-card p-4 text-left shadow-soft transition-colors hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+                'relative flex cursor-pointer flex-col gap-1 rounded-lg border bg-card p-4 text-start shadow-soft transition-colors hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
                 isSelected && 'border-primary bg-primary/5 ring-1 ring-primary',
                 disabled && 'cursor-not-allowed opacity-50',
                 hasError && !isSelected && 'border-destructive/50',
@@ -87,7 +87,7 @@ export function SingleSelectCards({
                 </span>
               ) : null}
               {isSelected ? (
-                <span className="absolute right-3 top-3 size-2.5 rounded-full bg-primary" aria-hidden />
+                <span className="absolute end-3 top-3 size-2.5 rounded-full bg-primary" aria-hidden />
               ) : null}
             </label>
           );

@@ -5,6 +5,7 @@
 import { useId } from 'react';
 import { MultiSelectChips } from './MultiSelectChips';
 import { interestOptions } from '../onboardingConstants';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface InterestsStepProps {
   interests: string[];
@@ -15,21 +16,20 @@ interface InterestsStepProps {
 
 export function InterestsStep({ interests, onInterestsChange, error, disabled }: InterestsStepProps) {
   const headingId = useId();
+  const { t } = useTranslation();
 
   return (
     <section aria-labelledby={headingId} className="grid gap-6">
       <header className="space-y-1">
         <h2 id={headingId} className="text-xl font-semibold leading-none tracking-tight">
-          Your interests
+          {t('onboarding.steps.interests.title')}
         </h2>
-        <p className="text-sm text-muted-foreground">
-          Select topics you enjoy. Your answers help WASL recommend communities and resources relevant to you.
-        </p>
+        <p className="text-sm text-muted-foreground">{t('onboarding.steps.interests.description')}</p>
       </header>
 
       <MultiSelectChips
-        label="Interests"
-        description="Choose one or more. You can change them later."
+        label={t('onboarding.steps.interests.label')}
+        description={t('onboarding.steps.interests.descriptionText')}
         options={interestOptions}
         values={interests}
         onChange={onInterestsChange}
