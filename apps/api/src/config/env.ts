@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { z } from 'zod'
 
 const EnvSchema = z.object({
@@ -12,7 +13,7 @@ const EnvSchema = z.object({
   RESEND_FROM_EMAIL: z.string().email().default('noreply@platform.example.com'),
   AI_PROVIDER: z.enum(['anthropic', 'openai']).default('anthropic'),
   // Optional: AI navigator falls back to deterministic recommendations when unset.
-  AI_PROVIDER_API_KEY: z.string().min(1).optional(),
+  AI_PROVIDER_API_KEY: z.string().min(1).optional().or(z.literal('')).transform(v => v || undefined),
   AI_MODEL: z.string().default('claude-3-5-haiku-20241022'),
   CORS_ORIGIN: z.string().optional(),
 })
