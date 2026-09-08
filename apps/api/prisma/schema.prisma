@@ -1,0 +1,285 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Better Auth required models ──────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  name          String
+  image         String?
+  role          String    @default("user")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions      Session[]
+  accounts      Account[]
+  profile       Profile?
+  analyticsEvents AnalyticsEvent[]
+  recommendationEvents RecommendationEvent[]
+
+  @@index([email])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+// ─── Domain models ────────────────────────────────────────────────────────────
+
+model Profile {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  bio               String?
+  originCountry     String?
+  targetCountry     String?
+  currentCity       String?
+  languages         String[]
+  interests         String[]
+  goals             String?
+  immigrationStatus String?
+  visaType          String?
+  arrivalDate       DateTime?
+  profileComplete   Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  communities Community[]
+  resources   Resource[]
+}
+
+model Language {
+  id   String @id @default(cuid())
+  code String @unique
+  name String
+
+  communities CommunityLanguage[]
+}
+
+model Interest {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  communities   CommunityInterest[]
+  resources     ResourceInterest[]
+  opportunities OpportunityInterest[]
+}
+
+model Community {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String
+  categoryId   String?
+  websiteUrl   String?
+  contactEmail String?
+  joinUrl      String?
+  memberCount  Int?
+  isVerified   Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  category     Category?           @relation(fields: [categoryId], references: [id])
+  languages    CommunityLanguage[]
+  interests    CommunityInterest[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isActive])
+}
+
+model CommunityLanguage {
+  communityId String
+  languageId  String
+
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  language    Language  @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  @@id([communityId, languageId])
+}
+
+model CommunityInterest {
+  communityId String
+  interestId  String
+
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  interest    Interest  @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([communityId, interestId])
+}
+
+model Resource {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  url         String
+  type        String
+  categoryId  String?
+  isVerified  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category    Category?         @relation(fields: [categoryId], references: [id])
+  interests   ResourceInterest[]
+
+  @@index([slug])
+  @@index([isActive])
+}
+
+model ResourceInterest {
+  resourceId String
+  interestId String
+
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([resourceId, interestId])
+}
+
+model Opportunity {
+  id               String   @id @default(cuid())
+  title            String
+  slug             String   @unique
+  description      String
+  type             String
+  organizationName String
+  applicationUrl   String?
+  deadline         DateTime?
+  isVerified       Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  targetCountry    String?
+  requirements     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  interests        OpportunityInterest[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@index([type])
+}
+
+model OpportunityInterest {
+  opportunityId String
+  interestId    String
+
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  interest      Interest    @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([opportunityId, interestId])
+}
+
+model RecommendationEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  entityId  String
+  score     Float
+  algorithm String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  userId     String?
+  eventType  String
+  properties Json     @default("{}")
+  sessionId  String?
+  createdAt  DateTime @default(now())
+
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+}
+
+model VerificationRecord {
+  id          String    @id @default(cuid())
+  entityType  String
+  entityId    String    @unique
+  status      String    @default("PENDING")
+  verifiedAt  DateTime?
+  verifiedBy  String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([entityType, entityId])
+  @@index([status])
+}
