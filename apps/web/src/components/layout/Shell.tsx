@@ -47,40 +47,146 @@ export const Shell: React.FC<ShellProps> = ({ currentTab, onNavigate, children }
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.65rem',
+              gap: '0.9rem',
               cursor: 'pointer',
               userSelect: 'none',
+              padding: '0.4rem 0.6rem',
+              borderRadius: 'var(--radius-md)',
+              transition: 'all 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(15, 118, 110, 0.04)'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+              e.currentTarget.style.transform = 'translateY(0)'
             }}
           >
+            {/* Custom Designed Wasl Vector Mark */}
             <div
               style={{
-                width: '2.4rem',
-                height: '2.4rem',
-                borderRadius: '10px',
-                backgroundColor: 'var(--primary)',
+                width: '2.85rem',
+                height: '2.85rem',
+                borderRadius: '14px',
+                background: 'linear-gradient(145deg, #0F766E 0%, #0d544f 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#fff',
-                fontWeight: 700,
-                fontSize: '1.25rem',
-                boxShadow: '0 2px 8px rgba(15, 118, 110, 0.25)',
+                boxShadow: '0 4px 16px rgba(15, 118, 110, 0.32), inset 0 1px 1.5px rgba(255, 255, 255, 0.3)',
+                border: '1px solid rgba(255, 255, 255, 0.16)',
+                position: 'relative',
+                flexShrink: 0,
               }}
             >
-              و
+              {/* Bespoke Geometric Calligraphic Monogram SVG */}
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 28 28"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }}
+              >
+                {/* Connecting Bridge / Arc representing 'وصل' (Connection) */}
+                <path
+                  d="M6 19.5C6 15 9.5 11 14.5 11C18 11 21.5 13 22 17.5"
+                  stroke="#E97C5F"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                />
+                {/* Waw Letter Body with Elegant Loop */}
+                <path
+                  d="M17.5 7.5C15.8 7.5 14.5 8.8 14.5 10.5C14.5 12.2 15.8 13.5 17.5 13.5C19.2 13.5 20.5 12.2 20.5 10.5C20.5 8.8 19.2 7.5 17.5 7.5Z"
+                  fill="#FFFFFF"
+                />
+                <path
+                  d="M17.5 13.5C15 15.5 12 18.5 7 19.5"
+                  stroke="#FFFFFF"
+                  strokeWidth="2.8"
+                  strokeLinecap="round"
+                />
+                {/* Connection Node Dot */}
+                <circle cx="22" cy="17.5" r="2" fill="#E97C5F" />
+              </svg>
+
+              {/* Glowing active hub indicator */}
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '-2px',
+                  right: '-2px',
+                  display: 'flex',
+                  width: '9px',
+                  height: '9px',
+                }}
+              >
+                <span
+                  style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--accent)',
+                    opacity: 0.75,
+                    animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                  }}
+                />
+                <span
+                  style={{
+                    position: 'relative',
+                    width: '9px',
+                    height: '9px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--accent)',
+                    border: '1.5px solid var(--surface)',
+                  }}
+                />
+              </span>
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--foreground)' }}>
-                  وصل
+
+            {/* Typography Stack */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                <span
+                  style={{
+                    fontSize: '1.45rem',
+                    fontWeight: 900,
+                    letterSpacing: '-0.03em',
+                    color: 'var(--foreground)',
+                    lineHeight: 1,
+                  }}
+                >
+                  وَصْـل
                 </span>
-                <span style={{ fontSize: '0.85rem', color: 'var(--muted)', fontWeight: 500 }}>
-                  Wasl
+                <span
+                  style={{
+                    fontSize: '0.7rem',
+                    fontFamily: 'var(--font-latin)',
+                    fontWeight: 800,
+                    color: 'var(--primary)',
+                    backgroundColor: 'var(--primary-light)',
+                    padding: '0.15rem 0.5rem',
+                    borderRadius: '6px',
+                    letterSpacing: '0.06em',
+                    border: '1px solid var(--primary-border)',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  WASL
                 </span>
               </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '-2px' }}>
-                دليل الطلاب العرب في تركيا
-              </p>
+              <span
+                style={{
+                  fontSize: '0.73rem',
+                  color: 'var(--muted)',
+                  fontWeight: 500,
+                  letterSpacing: '-0.01em',
+                  lineHeight: 1.2,
+                }}
+              >
+                بوابة الطلاب والمغتربين في تركيا
+              </span>
             </div>
           </div>
 

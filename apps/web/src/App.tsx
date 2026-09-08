@@ -6,16 +6,22 @@ import { OnboardingPage } from './pages/OnboardingPage'
 import { PlanPage } from './pages/PlanPage'
 import { CommunitiesPage } from './pages/CommunitiesPage'
 import { CommunityDetailPage } from './pages/CommunityDetailPage'
+import { GuideDetailPage } from './pages/GuideDetailPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { AiChatWidget } from './components/common/AiChatWidget'
 
 export function App() {
   const [currentTab, setCurrentTab] = useState<string>('landing')
   const [selectedCommunityId, setSelectedCommunityId] = useState<string | null>(null)
+  const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null)
 
   const handleNavigate = (tab: string, param?: string) => {
     if (tab === 'community-detail' && param) {
       setSelectedCommunityId(param)
       setCurrentTab('community-detail')
+    } else if (tab === 'guide-detail') {
+      setSelectedGuideId(param || 'default')
+      setCurrentTab('guide-detail')
     } else {
       setCurrentTab(tab)
     }
@@ -44,7 +50,17 @@ export function App() {
           />
         )}
 
+        {currentTab === 'guide-detail' && (
+          <GuideDetailPage
+            guideId={selectedGuideId}
+            onBack={() => handleNavigate('plan')}
+          />
+        )}
+
         {currentTab === 'profile' && <ProfilePage onNavigate={handleNavigate} />}
+
+        {/* Global AI Assistant Floating Widget (GPT-4o) */}
+        <AiChatWidget onNavigate={handleNavigate} />
       </Shell>
     </AuthProvider>
   )

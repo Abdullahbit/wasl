@@ -1,0 +1,652 @@
+[
+  {
+    "id": "com_neighborhood_welcome_committee",
+    "name": "Neighborhood Welcome Committee",
+    "slug": "neighborhood-welcome-committee",
+    "description": "Grassroots volunteers who welcome new arrivals with local orientation tours and meals.",
+    "websiteUrl": "https://neighborhoodwelcome.example.org",
+    "contactEmail": "volunteer@neighborhoodwelcome.example.org",
+    "joinUrl": "https://neighborhoodwelcome.example.org/join",
+    "memberCount": 330,
+    "isVerified": false,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_social_integration",
+      "name": "Social Integration",
+      "slug": "social-integration"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_cultural_events",
+        "name": "Cultural Events",
+        "slug": "cultural-events"
+      },
+      {
+        "id": "int_housing",
+        "name": "Housing",
+        "slug": "housing"
+      }
+    ],
+    "createdAt": "2026-09-08T11:27:10.327Z",
+    "updatedAt": "2026-09-08T11:27:10.327Z"
+  },
+  {
+    "id": "com_faith_and_community_alliance",
+    "name": "Faith and Community Alliance",
+    "slug": "faith-and-community-alliance",
+    "description": "Interfaith alliance offering fellowship, translation help, and settlement support.",
+    "websiteUrl": "https://faithcommunityalliance.example.org",
+    "contactEmail": "welcome@faithcommunityalliance.example.org",
+    "joinUrl": "https://faithcommunityalliance.example.org/join",
+    "memberCount": 1120,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_social_integration",
+      "name": "Social Integration",
+      "slug": "social-integration"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_arabic",
+        "code": "ar",
+        "name": "Arabic"
+      },
+      {
+        "id": "lang_french",
+        "code": "fr",
+        "name": "French"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_cultural_events",
+        "name": "Cultural Events",
+        "slug": "cultural-events"
+      },
+      {
+        "id": "int_networking",
+        "name": "Networking",
+        "slug": "networking"
+      }
+    ],
+    "createdAt": "2026-09-08T11:26:55.695Z",
+    "updatedAt": "2026-09-08T11:26:55.695Z"
+  },
+  {
+    "id": "com_new_parents_newcomer_group",
+    "name": "New Parents Newcomer Group",
+    "slug": "new-parents-newcomer-group",
+    "description": "Support group for immigrant parents navigating schools, childcare, and pediatric care.",
+    "websiteUrl": "https://newparentsnewcomer.example.org",
+    "contactEmail": "families@newparentsnewcomer.example.org",
+    "joinUrl": "https://newparentsnewcomer.example.org/join",
+    "memberCount": 460,
+    "isVerified": false,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_social_integration",
+      "name": "Social Integration",
+      "slug": "social-integration"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_spanish",
+        "code": "es",
+        "name": "Spanish"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_education",
+        "name": "Education",
+        "slug": "education"
+      },
+      {
+        "id": "int_healthcare",
+        "name": "Healthcare",
+        "slug": "healthcare"
+      }
+    ],
+    "createdAt": "2026-09-08T11:26:43.503Z",
+    "updatedAt": "2026-09-08T11:26:43.503Z"
+  },
+  {
+    "id": "com_language_exchange_circle",
+    "name": "Language Exchange Circle",
+    "slug": "language-exchange-circle",
+    "description": "Weekly conversation practice pairing newcomers with local language partners.",
+    "websiteUrl": "https://languageexchangecircle.example.org",
+    "contactEmail": "practice@languageexchangecircle.example.org",
+    "joinUrl": "https://languageexchangecircle.example.org/join",
+    "memberCount": 2400,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_social_integration",
+      "name": "Social Integration",
+      "slug": "social-integration"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_arabic",
+        "code": "ar",
+        "name": "Arabic"
+      },
+      {
+        "id": "lang_mandarin",
+        "code": "zh",
+        "name": "Mandarin"
+      },
+      {
+        "id": "lang_spanish",
+        "code": "es",
+        "name": "Spanish"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_language_learning",
+        "name": "Language Learning",
+        "slug": "language-learning"
+      },
+      {
+        "id": "int_cultural_events",
+        "name": "Cultural Events",
+        "slug": "cultural-events"
+      }
+    ],
+    "createdAt": "2026-09-08T11:26:26.368Z",
+    "updatedAt": "2026-09-08T11:26:26.368Z"
+  },
+  {
+    "id": "com_cultural_exchange_meetup",
+    "name": "Cultural Exchange Meetup",
+    "slug": "cultural-exchange-meetup",
+    "description": "Monthly meetups celebrating food, music, and traditions from around the world.",
+    "websiteUrl": "https://culturalexchangemeetup.example.org",
+    "contactEmail": "events@culturalexchangemeetup.example.org",
+    "joinUrl": "https://culturalexchangemeetup.example.org/join",
+    "memberCount": 1780,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_social_integration",
+      "name": "Social Integration",
+      "slug": "social-integration"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_french",
+        "code": "fr",
+        "name": "French"
+      },
+      {
+        "id": "lang_spanish",
+        "code": "es",
+        "name": "Spanish"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_cultural_events",
+        "name": "Cultural Events",
+        "slug": "cultural-events"
+      }
+    ],
+    "createdAt": "2026-09-08T11:26:14.400Z",
+    "updatedAt": "2026-09-08T11:26:14.400Z"
+  },
+  {
+    "id": "com_womens_career_circle",
+    "name": "Women's Career Circle",
+    "slug": "womens-career-circle",
+    "description": "Support and mentorship network for immigrant women re-entering the workforce.",
+    "websiteUrl": "https://womenscareercircle.example.org",
+    "contactEmail": "connect@womenscareercircle.example.org",
+    "joinUrl": "https://womenscareercircle.example.org/join",
+    "memberCount": 890,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_professional_development",
+      "name": "Professional Development",
+      "slug": "professional-development"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_arabic",
+        "code": "ar",
+        "name": "Arabic"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_employment",
+        "name": "Employment",
+        "slug": "employment"
+      },
+      {
+        "id": "int_networking",
+        "name": "Networking",
+        "slug": "networking"
+      }
+    ],
+    "createdAt": "2026-09-08T11:26:02.440Z",
+    "updatedAt": "2026-09-08T11:26:02.440Z"
+  },
+  {
+    "id": "com_entrepreneurs_abroad",
+    "name": "Entrepreneurs Abroad",
+    "slug": "entrepreneurs-abroad",
+    "description": "Network for immigrant founders building startups and small businesses in a new country.",
+    "websiteUrl": "https://entrepreneursabroad.example.org",
+    "contactEmail": "founders@entrepreneursabroad.example.org",
+    "joinUrl": "https://entrepreneursabroad.example.org/join",
+    "memberCount": 540,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_professional_development",
+      "name": "Professional Development",
+      "slug": "professional-development"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_spanish",
+        "code": "es",
+        "name": "Spanish"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_employment",
+        "name": "Employment",
+        "slug": "employment"
+      },
+      {
+        "id": "int_networking",
+        "name": "Networking",
+        "slug": "networking"
+      }
+    ],
+    "createdAt": "2026-09-08T11:25:50.517Z",
+    "updatedAt": "2026-09-08T11:25:50.517Z"
+  },
+  {
+    "id": "com_credential_recognition_support",
+    "name": "Credential Recognition Support",
+    "slug": "credential-recognition-support",
+    "description": "Peer group helping internationally trained professionals get credentials recognized.",
+    "websiteUrl": "https://credentialsupport.example.org",
+    "contactEmail": "ask@credentialsupport.example.org",
+    "joinUrl": "https://credentialsupport.example.org/join",
+    "memberCount": 710,
+    "isVerified": false,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_professional_development",
+      "name": "Professional Development",
+      "slug": "professional-development"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_french",
+        "code": "fr",
+        "name": "French"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_education",
+        "name": "Education",
+        "slug": "education"
+      },
+      {
+        "id": "int_employment",
+        "name": "Employment",
+        "slug": "employment"
+      }
+    ],
+    "createdAt": "2026-09-08T11:25:38.818Z",
+    "updatedAt": "2026-09-08T11:25:38.818Z"
+  },
+  {
+    "id": "com_tech_immigrants_network",
+    "name": "Tech Immigrants Network",
+    "slug": "tech-immigrants-network",
+    "description": "Community for immigrant software engineers and IT professionals to network and mentor.",
+    "websiteUrl": "https://techimmigrants.example.org",
+    "contactEmail": "hi@techimmigrants.example.org",
+    "joinUrl": "https://techimmigrants.example.org/join",
+    "memberCount": 3200,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_professional_development",
+      "name": "Professional Development",
+      "slug": "professional-development"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_mandarin",
+        "code": "zh",
+        "name": "Mandarin"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_employment",
+        "name": "Employment",
+        "slug": "employment"
+      },
+      {
+        "id": "int_networking",
+        "name": "Networking",
+        "slug": "networking"
+      },
+      {
+        "id": "int_education",
+        "name": "Education",
+        "slug": "education"
+      }
+    ],
+    "createdAt": "2026-09-08T11:25:24.274Z",
+    "updatedAt": "2026-09-08T11:25:24.274Z"
+  },
+  {
+    "id": "com_global_talent_job_club",
+    "name": "Global Talent Job Club",
+    "slug": "global-talent-job-club",
+    "description": "Job search accountability group with resume reviews and mock interviews for skilled migrants.",
+    "websiteUrl": "https://globaltalentjobclub.example.org",
+    "contactEmail": "team@globaltalentjobclub.example.org",
+    "joinUrl": "https://globaltalentjobclub.example.org/join",
+    "memberCount": 1530,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_professional_development",
+      "name": "Professional Development",
+      "slug": "professional-development"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_employment",
+        "name": "Employment",
+        "slug": "employment"
+      },
+      {
+        "id": "int_networking",
+        "name": "Networking",
+        "slug": "networking"
+      }
+    ],
+    "createdAt": "2026-09-08T11:25:14.821Z",
+    "updatedAt": "2026-09-08T11:25:14.821Z"
+  },
+  {
+    "id": "com_new_immigrant_healthcare_hub",
+    "name": "New Immigrant Healthcare Hub",
+    "slug": "new-immigrant-healthcare-hub",
+    "description": "Guidance on enrolling in health coverage and finding culturally competent providers.",
+    "websiteUrl": "https://immigranthealthcarehub.example.org",
+    "contactEmail": "info@immigranthealthcarehub.example.org",
+    "joinUrl": "https://immigranthealthcarehub.example.org/join",
+    "memberCount": 980,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_immigration_support",
+      "name": "Immigration Support",
+      "slug": "immigration-support"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_mandarin",
+        "code": "zh",
+        "name": "Mandarin"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_healthcare",
+        "name": "Healthcare",
+        "slug": "healthcare"
+      }
+    ],
+    "createdAt": "2026-09-08T11:25:05.684Z",
+    "updatedAt": "2026-09-08T11:25:05.684Z"
+  },
+  {
+    "id": "com_housing_helpline_group",
+    "name": "Housing Helpline Group",
+    "slug": "housing-helpline-group",
+    "description": "Volunteers helping newcomers find affordable, safe housing and understand tenant rights.",
+    "websiteUrl": "https://housinghelpline.example.org",
+    "contactEmail": "help@housinghelpline.example.org",
+    "joinUrl": "https://housinghelpline.example.org/join",
+    "memberCount": 640,
+    "isVerified": false,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_immigration_support",
+      "name": "Immigration Support",
+      "slug": "immigration-support"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_spanish",
+        "code": "es",
+        "name": "Spanish"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_housing",
+        "name": "Housing",
+        "slug": "housing"
+      }
+    ],
+    "createdAt": "2026-09-08T11:24:56.334Z",
+    "updatedAt": "2026-09-08T11:24:56.334Z"
+  },
+  {
+    "id": "com_refugee_rights_collective",
+    "name": "Refugee Rights Collective",
+    "slug": "refugee-rights-collective",
+    "description": "Advocacy and mutual aid collective supporting refugees through the asylum process.",
+    "websiteUrl": "https://refugeerightscollective.example.org",
+    "contactEmail": "support@refugeerightscollective.example.org",
+    "joinUrl": "https://refugeerightscollective.example.org/join",
+    "memberCount": 2100,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_immigration_support",
+      "name": "Immigration Support",
+      "slug": "immigration-support"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_arabic",
+        "code": "ar",
+        "name": "Arabic"
+      },
+      {
+        "id": "lang_french",
+        "code": "fr",
+        "name": "French"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_legal_aid",
+        "name": "Legal Aid",
+        "slug": "legal-aid"
+      },
+      {
+        "id": "int_healthcare",
+        "name": "Healthcare",
+        "slug": "healthcare"
+      }
+    ],
+    "createdAt": "2026-09-08T11:24:41.823Z",
+    "updatedAt": "2026-09-08T12:51:36.409Z"
+  },
+  {
+    "id": "com_visa_pathways_circle",
+    "name": "Visa Pathways Circle",
+    "slug": "visa-pathways-circle",
+    "description": "A discussion circle sharing first-hand experiences on work, study, and family visa pathways.",
+    "websiteUrl": "https://visapathwayscircle.example.org",
+    "contactEmail": "contact@visapathwayscircle.example.org",
+    "joinUrl": "https://visapathwayscircle.example.org/join",
+    "memberCount": 860,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_immigration_support",
+      "name": "Immigration Support",
+      "slug": "immigration-support"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_spanish",
+        "code": "es",
+        "name": "Spanish"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_legal_aid",
+        "name": "Legal Aid",
+        "slug": "legal-aid"
+      },
+      {
+        "id": "int_education",
+        "name": "Education",
+        "slug": "education"
+      }
+    ],
+    "createdAt": "2026-09-08T11:24:30.157Z",
+    "updatedAt": "2026-09-08T12:51:24.393Z"
+  },
+  {
+    "id": "com_newcomer_legal_network",
+    "name": "Newcomer Legal Network",
+    "slug": "newcomer-legal-network",
+    "description": "Peer-support group connecting newcomers with pro-bono immigration lawyers and paralegals.",
+    "websiteUrl": "https://newcomerlegalnetwork.example.org",
+    "contactEmail": "hello@newcomerlegalnetwork.example.org",
+    "joinUrl": "https://newcomerlegalnetwork.example.org/join",
+    "memberCount": 1240,
+    "isVerified": true,
+    "verificationStatus": null,
+    "category": {
+      "id": "cat_immigration_support",
+      "name": "Immigration Support",
+      "slug": "immigration-support"
+    },
+    "languages": [
+      {
+        "id": "lang_english",
+        "code": "en",
+        "name": "English"
+      },
+      {
+        "id": "lang_arabic",
+        "code": "ar",
+        "name": "Arabic"
+      }
+    ],
+    "interests": [
+      {
+        "id": "int_legal_aid",
+        "name": "Legal Aid",
+        "slug": "legal-aid"
+      },
+      {
+        "id": "int_housing",
+        "name": "Housing",
+        "slug": "housing"
+      }
+    ],
+    "createdAt": "2026-09-08T11:24:18.249Z",
+    "updatedAt": "2026-09-08T12:51:12.151Z"
+  }
+]

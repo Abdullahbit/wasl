@@ -14,7 +14,17 @@ const MAX_COMMUNITIES = 5
 const MAX_RESOURCES = 5
 const MAX_OPPORTUNITIES = 3
 
+// In-memory recommendation cache
+const recCache = new Map<string, { data: any; expiresAt: number }>()
+const CACHE_TTL_MS = 60_000
+
 export async function getRecommendations(userId: string) {
+  const now = Date.now()
+  const cached = recCache.get(userId)
+  if (cached && cached.expiresAt > now) {
+    return cached.data
+  }
+
   const profile = await profileService.getProfile(userId)
   if (!profile || !profile.profileComplete) {
     throw new ValidationError('Profile must be complete before requesting recommendations')
@@ -47,31 +57,37 @@ export async function getRecommendations(userId: string) {
     .sort((a, b) => b.score - a.score)
     .slice(0, MAX_OPPORTUNITIES)
 
-  await recommendationRepo.recordEvents([
-    ...scoredCommunities.map((c) => ({
-      userId,
-      type: 'COMMUNITY',
-      entityId: c.id,
-      score: c.score,
-      algorithm: ALGORITHM,
-    })),
-    ...scoredResources.map((r) => ({
-      userId,
-      type: 'RESOURCE',
-      entityId: r.id,
-      score: r.score,
-      algorithm: ALGORITHM,
-    })),
-    ...scoredOpportunities.map((o) => ({
-      userId,
-      type: 'OPPORTUNITY',
-      entityId: o.id,
-      score: o.score,
-      algorithm: ALGORITHM,
-    })),
-  ])
+  // Fire-and-forget: do not block response on remote DB insertion of recommendation tracking events
+  void recommendationRepo
+    .recordEvents([
+      ...scoredCommunities.map((c) => ({
+        userId,
+        type: 'COMMUNITY' as const,
+        entityId: c.id,
+        score: c.score,
+        algorithm: ALGORITHM,
+      })),
+      ...scoredResources.map((r) => ({
+        userId,
+        type: 'RESOURCE' as const,
+        entityId: r.id,
+        score: r.score,
+        algorithm: ALGORITHM,
+      })),
+      ...scoredOpportunities.map((o) => ({
+        userId,
+        type: 'OPPORTUNITY' as const,
+        entityId: o.id,
+        score: o.score,
+        algorithm: ALGORITHM,
+      })),
+    ])
+    .catch((err) => {
+      // Non-critical audit event error
+      console.error('Failed to record recommendation events:', err)
+    })
 
-  return {
+  const result = {
     data: {
       communities: scoredCommunities,
       resources: scoredResources,
@@ -82,4 +98,7 @@ export async function getRecommendations(userId: string) {
       algorithm: ALGORITHM,
     },
   }
+
+  recCache.set(userId, { data: result, expiresAt: now + CACHE_TTL_MS })
+  return result
 }

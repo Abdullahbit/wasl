@@ -1,91 +1,93 @@
 import type { ApiCommunity } from './api'
+import allCommunitiesJson from './allCommunitiesData.json'
 
 /**
- * Exact replica of the backend database seed records.
- * Used for immediate 0ms initial render so users never stare at blank skeletons,
- * then silently synchronized with the live API in the background.
+ * Exact replica of all 15 backend database seed records.
+ * Used for immediate 0ms initial render and bulletproof fallback so the Community Details
+ * page and list NEVER fail, spin indefinitely, or show blank states.
  */
-export const SEEDED_COMMUNITIES_PREVIEW: ApiCommunity[] = [
-  {
-    id: 'com_tech_immigrants_network',
-    name: 'Tech Immigrants Network',
-    slug: 'tech-immigrants-network',
-    description: 'مجتمع للمهندسين والمبرمجين القادمين الجدد للتواصل وتبادل الخبرات وبناء مشاريع تقنية وفرص التوظيف.',
-    websiteUrl: 'https://techimmigrants.example.org',
-    contactEmail: 'hi@techimmigrants.example.org',
-    joinUrl: 'https://techimmigrants.example.org/join',
-    memberCount: 3200,
-    isVerified: true,
-    verificationStatus: 'VERIFIED',
-    category: {
-      id: 'cat_professional_development',
-      name: 'Professional Development',
-      slug: 'professional-development',
+export const ALL_SEEDED_COMMUNITIES: ApiCommunity[] = allCommunitiesJson as ApiCommunity[]
+
+export const SEEDED_COMMUNITIES_BY_ID = new Map<string, ApiCommunity>(
+  ALL_SEEDED_COMMUNITIES.map((c) => [c.id, c])
+)
+
+export const SEEDED_COMMUNITIES_PREVIEW: ApiCommunity[] = ALL_SEEDED_COMMUNITIES
+
+export const SEEDED_PLAN_PREVIEW = {
+  communities: SEEDED_COMMUNITIES_PREVIEW.map((c, i) => ({
+    ...c,
+    score: 0.95 - i * 0.1,
+  })),
+  resources: [
+    {
+      id: 'res_e_ikamet_guide',
+      title: 'دليل التقديم على الإقامة الطلابية (e-İkamet)',
+      slug: 'e-ikamet-student-guide',
+      description: 'شرح تفصيلي خطوة بخطوة لكيفية حجز موعد إدارة الهجرة وتجهيز الأوراق والتأمين الصحي.',
+      url: 'https://e-ikamet.goc.gov.tr',
+      type: 'GUIDE',
+      isVerified: true,
+      score: 0.96,
+      category: { id: 'cat_immigration_support', name: 'Immigration Support' },
+      interests: [{ id: 'int_legal_aid', name: 'Legal Aid' }],
     },
-    languages: [
-      { id: 'lang_english', code: 'en', name: 'English' },
-      { id: 'lang_arabic', code: 'ar', name: 'Arabic' },
-    ],
-    interests: [
-      { id: 'int_employment', name: 'Employment', slug: 'employment' },
-      { id: 'int_networking', name: 'Networking', slug: 'networking' },
-      { id: 'int_education', name: 'Education', slug: 'education' },
-    ],
-    createdAt: '2026-09-08T11:27:10.327Z',
-    updatedAt: '2026-09-08T11:27:10.327Z',
-  },
-  {
-    id: 'com_language_exchange_circle',
-    name: 'Language Exchange Circle',
-    slug: 'language-exchange-circle',
-    description: 'جلسات ولقاءات أسبوعية لتبادل وممارسة اللغة التركية والإنجليزية مع طلاب وناطقين محليين.',
-    websiteUrl: 'https://languageexchangecircle.example.org',
-    contactEmail: 'practice@languageexchangecircle.example.org',
-    joinUrl: 'https://languageexchangecircle.example.org/join',
-    memberCount: 2400,
-    isVerified: true,
-    verificationStatus: 'VERIFIED',
-    category: {
-      id: 'cat_social_integration',
-      name: 'Social Integration',
-      slug: 'social-integration',
+    {
+      id: 'res_istanbulkart_student',
+      title: 'استخراج بطاقة المواصلات الطلابية المخفضة (İndirimli Kart)',
+      slug: 'istanbulkart-student-discount',
+      description: 'دليل تفعيل الخصم الطلابي في شبكة المواصلات العامة للمترو والمتروبوس والحافلات.',
+      url: 'https://istanbulkart.istanbul',
+      type: 'TOOL',
+      isVerified: true,
+      score: 0.92,
+      category: { id: 'cat_social_integration', name: 'Social Integration' },
+      interests: [{ id: 'int_education', name: 'Education' }],
     },
-    languages: [
-      { id: 'lang_arabic', code: 'ar', name: 'Arabic' },
-      { id: 'lang_english', code: 'en', name: 'English' },
-    ],
-    interests: [
-      { id: 'int_language_learning', name: 'Language Learning', slug: 'language-learning' },
-      { id: 'int_cultural_events', name: 'Cultural Events', slug: 'cultural-events' },
-    ],
-    createdAt: '2026-09-08T11:27:10.327Z',
-    updatedAt: '2026-09-08T11:27:10.327Z',
-  },
-  {
-    id: 'com_newcomer_legal_network',
-    name: 'Newcomer Legal Network',
-    slug: 'newcomer-legal-network',
-    description: 'شبكة دعم قانوني مجتمعية لمساعدة الطلاب والمقيمين الجدد في إجراءات الإقامة والأوراق الرسمية.',
-    websiteUrl: 'https://newcomerlegalnetwork.example.org',
-    contactEmail: 'hello@newcomerlegalnetwork.example.org',
-    joinUrl: 'https://newcomerlegalnetwork.example.org/join',
-    memberCount: 1240,
-    isVerified: true,
-    verificationStatus: 'VERIFIED',
-    category: {
-      id: 'cat_immigration_support',
-      name: 'Immigration Support',
-      slug: 'immigration-support',
+    {
+      id: 'res_turkish_practice_resources',
+      title: 'بوابة تعلم وممارسة المحادثة التركية اليومية',
+      slug: 'turkish-practice-portal',
+      description: 'مصادر تفاعلية وقنوات موثوقة لممارسة المحادثات اليومية وحل أسئلة الجامعة.',
+      url: 'https://yee.org.tr',
+      type: 'COURSE',
+      isVerified: true,
+      score: 0.88,
+      category: { id: 'cat_social_integration', name: 'Social Integration' },
+      interests: [{ id: 'int_language_learning', name: 'Language Learning' }],
     },
-    languages: [
-      { id: 'lang_arabic', code: 'ar', name: 'Arabic' },
-      { id: 'lang_english', code: 'en', name: 'English' },
-    ],
-    interests: [
-      { id: 'int_legal_aid', name: 'Legal Aid', slug: 'legal-aid' },
-      { id: 'int_housing', name: 'Housing', slug: 'housing' },
-    ],
-    createdAt: '2026-09-08T11:27:10.327Z',
-    updatedAt: '2026-09-08T11:27:10.327Z',
-  },
-]
+  ],
+  opportunities: [
+    {
+      id: 'opp_mentorship_fellowship',
+      title: 'برنامج الإرشاد الأكاديمي للطلاب الجدد',
+      slug: 'academic-mentorship-fellowship',
+      description: 'برنامج مجتمعي يربط الطالب الجديد بمرشد أكاديمي من نفس التخصص للمساعدة طوال الفصل الأول.',
+      type: 'FELLOWSHIP',
+      organizationName: 'Arab Student Union in Türkiye',
+      applicationUrl: 'https://example.org/mentorship',
+      deadline: '2026-10-15T00:00:00.000Z',
+      isVerified: true,
+      score: 0.94,
+      targetCountry: 'Türkiye',
+      requirements: 'طالب في السنة الأولى أو التحضيرية في إحدى الجامعات التركية',
+      interests: [{ id: 'int_education', name: 'Education' }, { id: 'int_networking', name: 'Networking' }],
+    },
+    {
+      id: 'opp_tech_internship_program',
+      title: 'فرص تدريب ومشاريع مفتوحة المصدر للطلاب',
+      slug: 'student-tech-internship',
+      description: 'مشاريع تقنية وتدريب تعاوني للطلاب الراغبين في اكتساب خبرة عملية وبناء سيرتهم الذاتية.',
+      type: 'INTERNSHIP',
+      organizationName: 'Tech Immigrants Alliance',
+      applicationUrl: 'https://example.org/tech-intern',
+      deadline: '2026-11-01T00:00:00.000Z',
+      isVerified: true,
+      score: 0.89,
+      targetCountry: 'Türkiye',
+      requirements: 'معرفة أساسية بالبرمجة والرغبة في التعلم',
+      interests: [{ id: 'int_employment', name: 'Employment' }],
+    },
+  ],
+}
+

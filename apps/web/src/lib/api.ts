@@ -2,6 +2,8 @@
  * Typed API client for Wasl (وصل) frontend connecting to the backend endpoints.
  */
 
+import { SEEDED_COMMUNITIES_BY_ID } from './seededFallback'
+
 export interface ApiCategory {
   id: string
   name: string
@@ -222,7 +224,9 @@ export const profileApi = {
   },
 }
 
-// ─── COMMUNITIES APIS ──────────────────────────────────────────────────────
+// ─── CLIENT CACHE UTILITY (SWR) ──────────────────────────────────────────
+const clientCache = new Map<string, { data: any; timestamp: number }>()
+const CLIENT_CACHE_TTL = 30_000 // 30s
 
 export const communitiesApi = {
   async list(filters: CommunityFilters = {}): Promise<PaginatedResult<ApiCommunity>> {
@@ -235,16 +239,59 @@ export const communitiesApi = {
     if (filters.limit) query.set('limit', String(filters.limit))
 
     const queryString = query.toString() ? `?${query.toString()}` : ''
-    return request<PaginatedResult<ApiCommunity>>(`/v1/communities${queryString}`)
+    const cacheKey = `communities:${queryString}`
+    
+    // Check client cache first
+    const cached = clientCache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < CLIENT_CACHE_TTL) {
+      return cached.data
+    }
+
+    const res = await request<PaginatedResult<ApiCommunity>>(`/v1/communities${queryString}`)
+    clientCache.set(cacheKey, { data: res, timestamp: Date.now() })
+    return res
   },
 
   async getById(id: string): Promise<ApiCommunity> {
-    const res = await request<{ data: ApiCommunity }>(`/v1/communities/${id}`)
-    return res.data
+    const cacheKey = `community:${id}`
+    const cached = clientCache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < CLIENT_CACHE_TTL) {
+      return cached.data
+    }
+
+    // Try finding in preloaded seeded communities first for immediate 0ms availability
+    const seeded = SEEDED_COMMUNITIES_BY_ID.get(id)
+
+    try {
+      // Fetch from API with a 3-second timeout so the user is NEVER blocked by slow database poolers
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 3500)
+
+      const res = await request<{ data: ApiCommunity }>(`/v1/communities/${id}`, {
+        signal: controller.signal,
+      })
+      clearTimeout(timeoutId)
+      clientCache.set(cacheKey, { data: res.data, timestamp: Date.now() })
+      return res.data
+    } catch (err) {
+      console.warn('Backend API slow or unreachable for community', id, '- using high-fidelity fallback')
+      if (seeded) {
+        clientCache.set(cacheKey, { data: seeded, timestamp: Date.now() })
+        return seeded
+      }
+      throw err
+    }
   },
 
   async getBySlug(slug: string): Promise<ApiCommunity> {
+    const cacheKey = `community:slug:${slug}`
+    const cached = clientCache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < CLIENT_CACHE_TTL) {
+      return cached.data
+    }
+
     const res = await request<{ data: ApiCommunity }>(`/v1/communities/slug/${slug}`)
+    clientCache.set(cacheKey, { data: res.data, timestamp: Date.now() })
     return res.data
   },
 }
@@ -252,10 +299,21 @@ export const communitiesApi = {
 // ─── RECOMMENDATIONS APIS ──────────────────────────────────────────────────
 
 export const recommendationsApi = {
-  async get(): Promise<RecommendationData> {
+  async get(forceRefresh = false): Promise<RecommendationData> {
+    const cacheKey = 'recommendations:current'
+    const cached = clientCache.get(cacheKey)
+    if (!forceRefresh && cached && Date.now() - cached.timestamp < CLIENT_CACHE_TTL) {
+      return cached.data
+    }
+
     const res = await request<{ data: RecommendationData }>('/v1/recommendations')
+    clientCache.set(cacheKey, { data: res.data, timestamp: Date.now() })
     return res.data
   },
+
+  clearCache() {
+    clientCache.delete('recommendations:current')
+  }
 }
 
 // ─── RESOURCES & OPPORTUNITIES APIS ────────────────────────────────────────

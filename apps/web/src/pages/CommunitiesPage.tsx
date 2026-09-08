@@ -6,19 +6,22 @@ import { WhyThisModal } from '../components/community/WhyThisModal'
 import { useAuth } from '../context/AuthContext'
 import { translate } from '../lib/translations'
 
+import { SEEDED_COMMUNITIES_PREVIEW } from '../lib/seededFallback'
+
 interface CommunitiesPageProps {
   onNavigate: (tab: string, param?: string) => void
 }
 
 export const CommunitiesPage: React.FC<CommunitiesPageProps> = ({ onNavigate }) => {
   const { profile } = useAuth()
-  const [communities, setCommunities] = useState<ApiCommunity[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  // Immediate 0ms render with seeded communities so user never waits for remote DB query
+  const [communities, setCommunities] = useState<ApiCommunity[]>(SEEDED_COMMUNITIES_PREVIEW)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [search, setSearch] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [selectedLanguage, setSelectedLanguage] = useState<string>('')
   const [selectedInterest, setSelectedInterest] = useState<string>('')
-  const [totalCount, setTotalCount] = useState<number>(0)
+  const [totalCount, setTotalCount] = useState<number>(SEEDED_COMMUNITIES_PREVIEW.length)
 
   // Why this modal state
   const [activeWhyCommunity, setActiveWhyCommunity] = useState<ApiCommunity | null>(null)
@@ -48,8 +51,8 @@ export const CommunitiesPage: React.FC<CommunitiesPageProps> = ({ onNavigate }) 
     { id: 'int_housing', label: 'السكن والإقامة' },
   ]
 
-  const loadCommunities = async () => {
-    setIsLoading(true)
+  const loadCommunities = async (showSkeleton = false) => {
+    if (showSkeleton) setIsLoading(true)
     try {
       const res = await communitiesApi.list({
         search: search || undefined,
@@ -58,8 +61,10 @@ export const CommunitiesPage: React.FC<CommunitiesPageProps> = ({ onNavigate }) 
         interestId: selectedInterest || undefined,
         limit: 50,
       })
-      setCommunities(res.data)
-      setTotalCount(res.meta?.total || res.data.length)
+      if (res.data && res.data.length > 0) {
+        setCommunities(res.data)
+        setTotalCount(res.meta?.total || res.data.length)
+      }
     } catch (err) {
       console.error('Failed to load communities:', err)
     } finally {
@@ -68,7 +73,9 @@ export const CommunitiesPage: React.FC<CommunitiesPageProps> = ({ onNavigate }) 
   }
 
   useEffect(() => {
-    loadCommunities()
+    // If active filters or search are set, show skeleton while fetching, otherwise revalidate in background
+    const hasFilter = Boolean(search || selectedCategory || selectedLanguage || selectedInterest)
+    loadCommunities(hasFilter)
   }, [selectedCategory, selectedLanguage, selectedInterest])
 
   const handleSearchSubmit = (e: React.FormEvent) => {

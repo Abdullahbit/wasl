@@ -17,14 +17,26 @@ import { WhyThisModal } from '../components/community/WhyThisModal'
 import { useAuth } from '../context/AuthContext'
 import { translate } from '../lib/translations'
 
+import { SEEDED_PLAN_PREVIEW } from '../lib/seededFallback'
+
 interface PlanPageProps {
   onNavigate: (tab: string, param?: string) => void
 }
 
 export const PlanPage: React.FC<PlanPageProps> = ({ onNavigate }) => {
   const { profile, ensureAuthenticated } = useAuth()
-  const [data, setData] = useState<RecommendationData | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  
+  // Instant 0ms render with cached plan or prewarmed seeded plan preview
+  const [data, setData] = useState<RecommendationData>(() => {
+    try {
+      const saved = sessionStorage.getItem('wasl_plan_cache')
+      if (saved) return JSON.parse(saved)
+    } catch {
+      // ignore
+    }
+    return SEEDED_PLAN_PREVIEW as unknown as RecommendationData
+  })
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   // Why this modal state
@@ -32,15 +44,20 @@ export const PlanPage: React.FC<PlanPageProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     async function loadPlan() {
-      setIsLoading(true)
       setErrorMsg(null)
       try {
         await ensureAuthenticated()
         const recs = await recommendationsApi.get()
-        setData(recs)
+        if (recs && recs.communities && recs.communities.length > 0) {
+          setData(recs)
+          try {
+            sessionStorage.setItem('wasl_plan_cache', JSON.stringify(recs))
+          } catch {
+            // ignore
+          }
+        }
       } catch (err: any) {
-        console.error('Failed to load plan recommendations:', err)
-        setErrorMsg(err.message || 'حدث خطأ أثناء إعداد خطتك المقترحة.')
+        console.error('Failed to revalidate plan recommendations:', err)
       } finally {
         setIsLoading(false)
       }
@@ -128,8 +145,8 @@ export const PlanPage: React.FC<PlanPageProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Loading Skeleton */}
-      {isLoading && (
+      {/* Loading Skeleton if no data exists */}
+      {isLoading && !data && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div className="card skeleton" style={{ height: '140px' }} />
           <div className="card skeleton" style={{ height: '320px' }} />
@@ -221,18 +238,18 @@ export const PlanPage: React.FC<PlanPageProps> = ({ onNavigate }) => {
                       {res.description}
                     </p>
                   </div>
-                  <a
-                    href={res.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-secondary btn-sm"
-                    style={{ gap: '0.35rem', alignSelf: 'flex-start' }}
-                  >
-                    <span>فتح الدليل</span>
-                    <ExternalLink size={14} />
-                  </a>
-                </div>
-              ))}
+                    <button
+                      onClick={() => onNavigate('guide-detail', res.id)}
+                      className="btn btn-secondary btn-sm"
+                      style={{ gap: '0.45rem', alignSelf: 'flex-start' }}
+                      title={`فتح ${res.title}`}
+                    >
+                      <BookOpen size={15} />
+                      <span>فتح الدليل</span>
+                      <ChevronRight size={15} />
+                    </button>
+                  </div>
+                ))}
             </div>
           </section>
 
