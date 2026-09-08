@@ -1,6 +1,7 @@
 {
   "name": "platform",
   "private": true,
+  "type": "module",
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "build": "pnpm -r build",
