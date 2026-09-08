@@ -13,6 +13,7 @@ import { profileRouter } from './modules/profiles/profile.router.js'
 import { communityRouter } from './modules/communities/community.router.js'
 import { resourceRouter } from './modules/resources/resource.router.js'
 import { opportunityRouter } from './modules/opportunities/opportunity.router.js'
+import { recommendationRouter } from './modules/recommendations/recommendation.router.js'
 
 export function createApp(): { app: Express; v1Router: Router } {
   const app = express()
@@ -68,6 +69,9 @@ export function createApp(): { app: Express; v1Router: Router } {
 
   // Opportunity routes (public)
   v1Router.use('/opportunities', opportunityRouter)
+
+  // Recommendation routes (auth required)
+  v1Router.use('/recommendations', recommendationRouter)
 
   // 404 handler
   app.use((_req, _res, next) => {
