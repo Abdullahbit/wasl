@@ -6,5 +6,4 @@ export * from './profile.js';
 export * from './community.js';
 export * from './resource.js';
 export * from './recommendation.js';
-export * from './opportunity.js';
 export * from './common.js';

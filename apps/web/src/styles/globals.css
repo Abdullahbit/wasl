@@ -1,0 +1,201 @@
+/**
+ * Applies the Istanbul Bridge design theme and shadcn/ui semantic tokens.
+ */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 20px;
+  --background: #F7F8F5;
+  --foreground: #1D2528;
+  --card: #fff;
+  --card-foreground: #1D2528;
+  --popover: #fff;
+  --popover-foreground: #1D2528;
+  --primary: #0F766E;
+  --primary-foreground: #fff;
+  --primary-hover: #0B5F59;
+  --primary-muted: #E6F3F1;
+  --secondary: #fff;
+  --secondary-foreground: #1D2528;
+  --muted: #F1F4F2;
+  --muted-foreground: #667276;
+  --accent: #E97C5F;
+  --accent-foreground: #fff;
+  --accent-muted: #FFF0EB;
+  --destructive: #B7791F;
+  --destructive-foreground: #fff;
+  --border: #DDE4E1;
+  --input: #DDE4E1;
+  --ring: #0F766E;
+  --chart-1: #0F766E;
+  --chart-2: #E97C5F;
+  --chart-3: #1F8A5B;
+  --chart-4: #2563EB;
+  --chart-5: #7C5CE6;
+  --sidebar: #F7F8F5;
+  --sidebar-foreground: #1D2528;
+  --sidebar-primary: #0F766E;
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: #F1F4F2;
+  --sidebar-accent-foreground: #1D2528;
+  --sidebar-border: #DDE4E1;
+  --sidebar-ring: #0F766E;
+  --success: #1F8A5B;
+  --success-foreground: #fff;
+  --success-muted: #E7F6EF;
+  --warning: #B7791F;
+  --warning-foreground: #fff;
+  --warning-muted: #FFF7DF;
+  --info: #2563EB;
+  --info-foreground: #fff;
+  --info-muted: #EAF0FF;
+  --navigator: #7C5CE6;
+  --navigator-foreground: #fff;
+  --navigator-muted: #F3EFFF;
+}
+
+.dark {
+  --background: #1D2528;
+  --foreground: #F7F8F5;
+  --card: #283338;
+  --card-foreground: #F7F8F5;
+  --popover: #283338;
+  --popover-foreground: #F7F8F5;
+  --primary: #E6F3F1;
+  --primary-foreground: #0F766E;
+  --primary-hover: #DDE4E1;
+  --primary-muted: #0B5F59;
+  --secondary: #283338;
+  --secondary-foreground: #F7F8F5;
+  --muted: #283338;
+  --muted-foreground: #A1AAB0;
+  --accent: #E97C5F;
+  --accent-foreground: #fff;
+  --accent-muted: #7C3C2A;
+  --destructive: #E97C5F;
+  --destructive-foreground: #fff;
+  --border: #405057;
+  --input: #405057;
+  --ring: #E6F3F1;
+  --sidebar: #1D2528;
+  --sidebar-foreground: #F7F8F5;
+  --sidebar-primary: #E6F3F1;
+  --sidebar-primary-foreground: #0F766E;
+  --sidebar-accent: #283338;
+  --sidebar-accent-foreground: #F7F8F5;
+  --sidebar-border: #405057;
+  --sidebar-ring: #E6F3F1;
+  --success: #1F8A5B;
+  --success-foreground: #fff;
+  --success-muted: #104C32;
+  --warning: #B7791F;
+  --warning-foreground: #fff;
+  --warning-muted: #64400E;
+  --info: #2563EB;
+  --info-foreground: #fff;
+  --info-muted: #12347D;
+  --navigator: #7C5CE6;
+  --navigator-foreground: #fff;
+  --navigator-muted: #432E86;
+}
+
+@theme inline {
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-muted: var(--primary-muted);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-muted: var(--accent-muted);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-muted: var(--success-muted);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-muted: var(--warning-muted);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-muted: var(--info-muted);
+  --color-navigator: var(--navigator);
+  --color-navigator-foreground: var(--navigator-foreground);
+  --color-navigator-muted: var(--navigator-muted);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 14px);
+  --shadow-card: 0 10px 30px rgba(22, 33, 31, 0.08);
+  --shadow-floating: 0 24px 70px rgba(22, 33, 31, 0.11);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply bg-background;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  h1 {
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.0;
+    letter-spacing: -0.055em;
+    font-weight: 800;
+  }
+  h2 {
+    font-size: 34px;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    font-weight: 800;
+  }
+  h3 {
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+  h4 {
+    @apply tracking-tight font-semibold;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+}
