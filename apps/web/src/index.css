@@ -1,9 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-[#fdf8f2] text-[#1a242e];
+    font-family: Inter, 'Tajawal', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+  }
+  h1,h2,h3 {
+    font-family: Georgia, 'Amiri', serif;
+  }
+  html[lang="ar"] body {
+    font-family: 'Tajawal', Inter, system-ui, sans-serif;
+    line-height: 1.7;
+  }
+  html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3 {
+    font-family: 'Tajawal', Georgia, serif;
+    font-weight: 700;
   }
 }

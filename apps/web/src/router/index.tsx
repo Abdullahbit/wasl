@@ -1,33 +1,29 @@
-import { createBrowserRouter, RouterProvider, Outlet, Link } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import TopNav from '../components/TopNav';
+import Landing from '../pages/Landing';
+import Onboarding from '../pages/Onboarding';
+import Plan from '../pages/Plan';
+import Discover from '../pages/Discover';
+import CommunityDetail from '../pages/CommunityDetail';
+import Resources from '../pages/Resources';
+import { LanguageProvider } from '../context/LanguageContext';
 
 const Layout = () => (
-  <div className="min-h-screen flex flex-col">
-    <header className="bg-white border-b shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link to="/" className="font-bold text-2xl text-blue-600">WASL</Link>
-        <nav className="flex space-x-4">
-          <Link to="/onboarding" className="text-gray-600 hover:text-gray-900">Onboarding</Link>
-          <Link to="/plan" className="text-gray-600 hover:text-gray-900">Plan</Link>
-          <Link to="/communities" className="text-gray-600 hover:text-gray-900">Communities</Link>
-          <Link to="/resources" className="text-gray-600 hover:text-gray-900">Resources</Link>
-        </nav>
-      </div>
-    </header>
+  <div className="min-h-screen flex flex-col bg-[#fdf8f2]">
+    <TopNav />
     <main className="flex-grow">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Outlet />
-      </div>
+      <Outlet />
     </main>
+    <footer className="text-center text-xs text-[#6b7a8a] py-8">© WASL — A brighter tomorrow in Istanbul</footer>
   </div>
 );
 
-// Placeholder pages
-const Landing = () => <div className="text-center py-20"><h1 className="text-4xl font-bold">Welcome to WASL</h1><p className="mt-4 text-gray-600">Smart Community Navigation for International Students in Türkiye.</p></div>;
-const Onboarding = () => <div><h1 className="text-2xl font-bold mb-4">Smart Onboarding</h1><p>Placeholder for the onboarding form.</p></div>;
-const Plan = () => <div><h1 className="text-2xl font-bold mb-4">Your Roadmap</h1><p>Placeholder for the AI-generated plan.</p></div>;
-const Communities = () => <div><h1 className="text-2xl font-bold mb-4">Communities</h1><p>Placeholder for recommended communities.</p></div>;
-const CommunityDetails = () => <div><h1 className="text-2xl font-bold mb-4">Community Details</h1><p>Placeholder for community details.</p></div>;
-const Resources = () => <div><h1 className="text-2xl font-bold mb-4">Resources</h1><p>Placeholder for resources.</p></div>;
+const About = () => (
+  <div className="max-w-[800px] mx-auto px-6 py-12 text-start">
+    <h1 className="text-3xl font-bold text-[#1e3a5f]">About WASL</h1>
+    <p className="mt-4 text-[#4a5a6a]">WASL connects Arabic-speaking international students with trusted resources and welcoming communities across Istanbul.</p>
+  </div>
+);
 
 const router = createBrowserRouter([
   {
@@ -37,13 +33,17 @@ const router = createBrowserRouter([
       { index: true, element: <Landing /> },
       { path: 'onboarding', element: <Onboarding /> },
       { path: 'plan', element: <Plan /> },
-      { path: 'communities', element: <Communities /> },
-      { path: 'communities/:id', element: <CommunityDetails /> },
+      { path: 'communities', element: <Discover /> },
+      { path: 'communities/:id', element: <CommunityDetail /> },
       { path: 'resources', element: <Resources /> },
+      { path: 'about', element: <About /> },
+      { path: 'discover', element: <Discover /> },
     ],
   },
 ]);
 
-export const AppRouter = () => {
-  return <RouterProvider router={router} />;
-};
+export const AppRouter = () => (
+  <LanguageProvider>
+    <RouterProvider router={router} />
+  </LanguageProvider>
+);
